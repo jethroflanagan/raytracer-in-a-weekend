@@ -3040,6 +3040,11 @@ map-visit@^1.0.0:
   dependencies:
     object-visit "^1.0.0"
 
+math3d@^0.2.2:
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/math3d/-/math3d-0.2.2.tgz#0659e0d3bf64976d139599d3b1dff03aad9df87b"
+  integrity sha1-Blng079kl20TlZnTsd/wOq2d+Hs=
+
 md5.js@^1.3.4:
   version "1.3.5"
   resolved "https://registry.yarnpkg.com/md5.js/-/md5.js-1.3.5.tgz#b5d07b8e3216e3e27cd728d72f70d1e6a342005f"
@@ -5073,11 +5078,6 @@ v8-compile-cache@^2.0.0:
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/v8-compile-cache/-/v8-compile-cache-2.0.3.tgz#00f7494d2ae2b688cfe2899df6ed2c54bef91dbe"
   integrity sha512-CNmdbwQMBjwr9Gsmohvm0pbL954tJrNzf6gWL3K+QMQf00PF7ERGrEiLgjuU3mKreLC2MeGhUsNV9ybTbLgd3w==
-
-vector-3@^1.0.7:
-  version "1.0.7"
-  resolved "https://registry.yarnpkg.com/vector-3/-/vector-3-1.0.7.tgz#07db2312b25b272c51beee9ca252559da8fe40e1"
-  integrity sha1-B9sjErJbJyxRvu6colJVnaj+QOE=
 
 vendors@^1.0.0:
   version "1.0.3"

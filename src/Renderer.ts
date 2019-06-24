@@ -1,7 +1,5 @@
-import Vector3 from 'vector-3';
 import { Color } from './Color';
 import { Image } from './Image';
-import { Ray } from './Ray';
 
 // RHS camera (y up, x right, negative z into screen)
 export class Renderer {
@@ -16,9 +14,6 @@ export class Renderer {
     this.height = canvas.height;
 
     this.imageData = this.ctx.createImageData(this.width, this.height);
-  }
-
-  getColor(ray: Ray) {
   }
 
   setPixel = (x: number, y: number, color: Color) => {

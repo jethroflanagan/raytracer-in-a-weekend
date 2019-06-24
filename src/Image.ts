@@ -31,4 +31,5 @@ export class Image {
   getPixel(x, y) {
     return this.pixels[y][x];
   }
+
 }
