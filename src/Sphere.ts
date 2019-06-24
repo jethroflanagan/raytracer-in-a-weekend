@@ -31,7 +31,10 @@ export class Sphere {
     const c = oc.dot(oc) - this.radius ** 2;
 
     const discriminant = b ** 2 - 4 * a * c;
-    return (discriminant > 0);
+    if (discriminant < 0) {
+      return -1;
+    }
+    return (-b - Math.sqrt(discriminant)) / (a * 2);
   }
 
 }

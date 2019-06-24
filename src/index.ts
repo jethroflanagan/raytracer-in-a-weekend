@@ -12,15 +12,16 @@ const width = canvas.width;
 const height = canvas.height;
 
 function createScene() {
+  const aspectRatio = width / height;
   const image = new Image(width, height);
 
   const origin = new Vector3(0,0,0);
-  const lowerLeftCorner = new Vector3(-2,-1,-1);
-  const horizontal = new Vector3(4, 0, 0);
-  const vertical = new Vector3(0,2,0);
+  const lowerLeftCorner = new Vector3(-width / 2, -height/2,-100);
+  const horizontal = new Vector3(width, 0, 0);
+  const vertical = new Vector3(0, height, 0);
 
   const background = new FlatBackground();
-  const sphere = new Sphere(new Vector3(0, 0, -1), .5);
+  const sphere = new Sphere(new Vector3(0, 0, -1), .75);
 
   for (let y: number = 0; y < height; y++) {
     for (let x: number = 0; x < width; x++) {
@@ -31,11 +32,14 @@ function createScene() {
         .add(horizontal.multiply(x / width))
         .add(vertical.multiply(y / height)));
 
-      if (sphere.getRayIntersections(ray)) {
+      const t = sphere.getRayIntersections(ray)
+      if (t > 0) {
+        const N: Vector3 = ray.pointAtParameter(t).subtract(sphere.center).unit();
+        let Ncol = N.add(1).multiply(.5);
         color = <Color>{
-          r: 1,
-          g: 0,
-          b: 0,
+          r: Ncol.x,
+          g: Ncol.y,
+          b: Ncol.z,
           a: 1,
         };
       }
