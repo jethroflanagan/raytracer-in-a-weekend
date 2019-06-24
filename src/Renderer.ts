@@ -1,6 +1,9 @@
 import Vector3 from 'vector-3';
 import { Color } from './Color';
+import { Image } from './Image';
+import { Ray } from './Ray';
 
+// RHS camera (y up, x right, negative z into screen)
 export class Renderer {
   private ctx = null;
   private imageData = null;
@@ -13,7 +16,9 @@ export class Renderer {
     this.height = canvas.height;
 
     this.imageData = this.ctx.createImageData(this.width, this.height);
+  }
 
+  getColor(ray: Ray) {
   }
 
   setPixel = (x: number, y: number, color: Color) => {
@@ -26,13 +31,12 @@ export class Renderer {
     imageData.data[index+3] = ~~(a * 255);
   }
 
-  render = (pixels) => {
+  render = (image: Image) => {
     const { ctx, imageData } = this;
-    const height = pixels.length;
-    const width = pixels[0].length;
+    const { width, height } = image;
     for (let y: number = 0; y < height; y++) {
       for (let x: number = 0; x < width; x++) {
-        const color = pixels[y][x];
+        const color = image.getPixel(x, y);
         this.setPixel(x, y, color);
       }
     }
