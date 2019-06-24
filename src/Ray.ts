@@ -9,7 +9,7 @@ export class Ray {
     this.direction = direction.clone();
   }
 
-  pointAtParameter(t: number) {
+  pointAtParameter(t: number = 1) {
     const direction = this.direction.clone();
     const origin = this.origin.clone();
     return origin.add(
@@ -18,7 +18,7 @@ export class Ray {
   }
 
   unitDirection() {
-    return this.direction.clone().subtract(this.origin).normalize();
+    return this.direction.subtract(this.origin).normalize();
   }
 
 }
