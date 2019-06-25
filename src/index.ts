@@ -29,15 +29,17 @@ function createScene() {
   const background = new FlatBackground();
   const sphere = new Sphere(new Vector3(0, 0, -2), 1.5);
   const sphere2 = new Sphere(new Vector3(0.5, 0, -1), .5);
+  const sphere3 = new Sphere(new Vector3(0, -100, -20), 100);
 
   const scene = new Scene();
   scene.addBackground(background);
   scene.addChild(sphere, { name: '1' });
   scene.addChild(sphere2, { name: '2' });
+  scene.addChild(sphere3, { name: 'ground' });
 
   const renderer = new Renderer({ canvas, camera, scene });
 
-  renderer.render();
+  renderer.render({ antialias: { numSamples: 5, blurRadius: 1, isUniform: true } });
 }
 
 

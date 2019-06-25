@@ -75,15 +75,15 @@ export class Renderer {
     return color;
   }
 
-  antialiasForXY(x, y, { numSamples = 10, blurSize = 1, isUniform = false } = {}): Color {
+  antialiasForXY(x, y, { numSamples = 10, blurRadius = 1, isUniform = false } = {}): Color {
     let colorV: Vector3 = new Vector3(0,0,0);
 
     for (let s = 0; s < numSamples; s++) {
       const angleVal = isUniform ? s / numSamples: Math.random();
       const sampleAngle = angleVal * Math.PI * 2;
       const resultV: Color = this.getColorForXY(
-        (x + Math.cos(sampleAngle) * blurSize),
-        (y + Math.sin(sampleAngle) * blurSize)
+        (x + Math.cos(sampleAngle) * blurRadius),
+        (y + Math.sin(sampleAngle) * blurRadius)
       );
       colorV = new Vector3(resultV.r, resultV.g, resultV.b).add(colorV);
     }
@@ -104,13 +104,15 @@ export class Renderer {
     return this.shade(ray);
   }
 
-  render = () => {
-    const { ctx, renderBuffer, width, height, camera, scene } = this;
-    const { background } = scene;
+  render = ({ antialias = null } = {}) => {
+    const { ctx, renderBuffer, width, height } = this;
+
+    const renderXY = antialias ? (x, y) => this.antialiasForXY(x, y, { ...antialias }) : (x, y) => this.getColorForXY(x, y);
+
     for (let y: number = 0; y < height; y++) {
       for (let x: number = 0; x < width; x++) {
-        // let color = this.getColorForXY(x, y);
-        let color = this.antialiasForXY(x, y, { isUniform: true });
+        let color = renderXY(x, y);
+        // let color = this.antialiasForXY(x, y, { isUniform: true });
 
         // TODO: do this conversion, ensure right side up
         this.setPixel(x, height - 1 - y, color);
