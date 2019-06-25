@@ -11,7 +11,7 @@ export class NormalMaterial implements Material {
 
   bounce({ ray, intersection }: { ray: Ray, intersection: Intersection }): { bounceRay: Ray, attenuation: Color } {
     const colorV: Vector3 = intersection.normal.add(1).multiply(.5);
-    // const color = vectorToColor(colorV);
+    // const colorV: Vector3 = n.add(1).multiply(.5);
     const attenuation = colorV.toColor();
     const bounceRay = null;
     return {

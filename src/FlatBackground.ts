@@ -7,6 +7,7 @@ export class FlatBackground {
   }
 
   getColor(ray: Ray) {
+    // return new Color(.8,1,1);
     const unitDirection = ray.direction.unit();
     const t = (1 + unitDirection.y) * .5;
 

@@ -54,10 +54,10 @@ export class Renderer {
     return image;
   }
 
-  // shadeNormal({ intersection, volume }: { intersection: Intersection, volume: Volume }): Color {
-  //   const v = intersection.normal.add(1).multiply(.5);
-  //   return vectorToColor(v);
-  // }
+  shadeNormal({ intersection, volume }: { intersection: Intersection, volume: Volume }): Color {
+    const v = intersection.normal.add(1).multiply(.5);
+    return v.toColor();
+  }
 
   getColorForRay(ray: Ray, depth: number = 0): Color {
     const { scene } = this;
@@ -69,7 +69,7 @@ export class Renderer {
       if (depth >= MAX_RAY_DEPTH) {
         return new Color(0, 0, 0, 1);
       }
-      // color = this.shadeNormal({ intersection, volume });
+      // color = this.shadeNormal({ intersection, volume });return color;
       // const origin = intersection.point;
       // const target = origin.add(intersection.normal).add(Vector3.randomDirection());
       // const direction = target.subtract(origin);
@@ -121,6 +121,7 @@ export class Renderer {
   }
 
   render = ({ antialias = null } = {}) => {
+    console.time('render');
     const { ctx, renderBuffer, width, height } = this;
 
     const renderXY = antialias ? (x, y) => this.antialiasForXY(x, y, { ...antialias }) : (x, y) => this.getColorForXY(x, y);
@@ -129,11 +130,13 @@ export class Renderer {
       for (let x: number = 0; x < width; x++) {
         let color: Color = renderXY(x, y);
 
-        color = this.correctGamma(color);
+        // color = this.correctGamma(color);
+
         // TODO: do this conversion, ensure right side up
         this.setPixel(x, height - 1 - y, color);
       }
     }
     ctx.putImageData(renderBuffer, 0, 0);
+    console.timeEnd('render');
   }
 }
