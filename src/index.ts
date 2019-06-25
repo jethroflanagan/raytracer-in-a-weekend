@@ -5,20 +5,26 @@ import { Renderer } from './Renderer';
 import { Image } from './Image';
 import { Ray } from './Ray';
 import { Sphere } from './Sphere';
+import { Camera, RenderTarget } from './Camera';
 const canvas = document.getElementById('render');
 
 const renderer = new Renderer(canvas);
 const width = canvas.width;
 const height = canvas.height;
 
+// TODO: add to scene and move render code into renderer
 function createScene() {
   const aspectRatio = width / height;
+
   const image = new Image(width, height);
 
+  const renderTarget: RenderTarget = <RenderTarget>{
+    width: width / 100,
+    height: height / 100,
+    depth: 1,
+  };
   const origin = new Vector3(0,0,0);
-  const lowerLeftCorner = new Vector3(-width / 2, -height/2,-100);
-  const horizontal = new Vector3(width, 0, 0);
-  const vertical = new Vector3(0, height, 0);
+  const camera: Camera = new Camera(origin, renderTarget);
 
   const background = new FlatBackground();
   const sphere = new Sphere(new Vector3(0, 0, -1), .75);
@@ -27,14 +33,14 @@ function createScene() {
     for (let x: number = 0; x < width; x++) {
 
       let color = null;
-      const ray = new Ray(origin,
-        lowerLeftCorner
-        .add(horizontal.multiply(x / width))
-        .add(vertical.multiply(y / height)));
+      // TODO: do this conversion properly
+      const u = x / width;
+      const v = y / height;
+      const ray = camera.getRay(u, v);
 
-      const t = sphere.getRayIntersections(ray)
-      if (t > 0) {
-        const N: Vector3 = ray.pointAtParameter(t).subtract(sphere.center).unit();
+      const intersection = sphere.hit(ray, 0, Infinity);
+      if (intersection != null && intersection.t > 0) {
+        const N: Vector3 = ray.pointAtParameter(intersection.t).subtract(sphere.center).unit();
         let Ncol = N.add(1).multiply(.5);
         color = <Color>{
           r: Ncol.x,
@@ -47,6 +53,7 @@ function createScene() {
         color = background.getColor(ray);
       }
 
+      // TODO: do this conversion
       image.setPixel(x, height - 1 - y, color);
     }
   }
