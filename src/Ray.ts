@@ -14,7 +14,7 @@ export class Ray {
   }
 
   unitDirection() {
-    return this.direction.normalize();
+    return this.direction.unit();
   }
 
 }

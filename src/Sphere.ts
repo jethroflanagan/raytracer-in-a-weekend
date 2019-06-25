@@ -9,13 +9,13 @@ export class Sphere implements Volume {
   }
   // http://kylehalladay.com/blog/tutorial/math/2013/12/24/Ray-Sphere-Intersection.html
   hit(ray: Ray, tMin: number, tMax: number): Intersection {
+    // removed 2 * below as it cancels out (sphere is b^2 - 4ac)
     const oc = ray.origin.subtract(this.center);
     const a = ray.direction.dot(ray.direction);
-    const b = 2 * oc.dot(ray.direction);
-    // console.log(oc.dot(oc).subtract(this.radius * this.radius));
+    const b = oc.dot(ray.direction);
     const c = oc.dot(oc) - this.radius ** 2;
 
-    const discriminant = b ** 2 - 4 * a * c;
+    const discriminant = b ** 2 - a * c;
     if (discriminant < 0) {
       return null;
     }
@@ -24,12 +24,12 @@ export class Sphere implements Volume {
     let point = null;
 
     let t = (-b - partialCalc) / a;
-    if (t < tMax && discriminant > tMin) {
+    if (t > tMin && t < tMax) {
       point = ray.pointAtParameter(t);
     }
 
     t = (-b + partialCalc) / a;
-    if (t < tMax && t > tMin) {
+    if (t > tMin && t < tMax) {
       point = ray.pointAtParameter(t);
     }
 

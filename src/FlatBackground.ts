@@ -7,11 +7,8 @@ export class FlatBackground {
   }
 
   getColor(ray: Ray) {
-    const unitDirection = ray.direction.divide(ray.direction.length());
-    const t = (unitDirection.y + 1) * .5;
-    // console.log(unitDirection.y, t);
-
-    // const flatCenter = new Vector3(this.center.x, this.center.y, 0);
+    const unitDirection = ray.direction.unit();
+    const t = (1 + unitDirection.y) * .5;
 
     const result = Vector3.lerp(
       new Vector3(1, 1, 1),

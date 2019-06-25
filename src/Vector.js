@@ -68,9 +68,6 @@ Vector.prototype = {
     this.x = x; this.y = y; this.z = z;
     return this;
   },
-  normalize: function() {
-    return this.divide(this.length());
-  }
 };
 Vector.negative = function(a, b) {
   b.x = -a.x; b.y = -a.y; b.z = -a.z;
