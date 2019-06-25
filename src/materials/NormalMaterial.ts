@@ -13,7 +13,10 @@ export class NormalMaterial implements Material {
     const colorV: Vector3 = intersection.normal.add(1).multiply(.5);
     // const colorV: Vector3 = n.add(1).multiply(.5);
     const attenuation = colorV.toColor();
-    const bounceRay = null;
+    let bounceRay = null;
+
+    const target = intersection.point.add(intersection.normal).add(Vector3.randomDirection());
+      bounceRay = new Ray(intersection.point, target);
     return {
       attenuation,
       bounceRay,
