@@ -6,7 +6,10 @@ import { Vector3 } from './Vector';
 import { Volume } from './Volume';
 import { Intersection } from './Intersection';
 import { Ray } from './Ray';
+import { vectorToColor, colorToVector } from './utils';
 
+const T_MIN = .001;
+const T_MAX = Infinity;
 // RHS camera (y up, x right, negative z into screen)
 export class Renderer {
   private canvas = null;
@@ -60,14 +63,30 @@ export class Renderer {
     }
   }
 
-  shade(ray: Ray): Color {
+  // reject until point found inside sphere
+  randomInUnitSphere() {
+    let point: Vector3;
+    do {
+      point = new Vector3(Math.random(), Math.random(), Math.random()).subtract(.5).multiply(2);
+    } while (point.length() ** 2 >= 1)
+    return point;
+  }
+
+  getColorForRay(ray: Ray): Color {
     const { scene } = this;
     const { background } = scene;
     let color: Color = null;
 
-    const { intersection, volume } = scene.hit(ray, 0, Infinity);
+    const { intersection, volume } = scene.hit(ray, T_MIN, T_MAX);
     if (intersection != null && intersection.t > 0) {
-      color = this.shadeNormal({ intersection, volume });
+      // color = this.shadeNormal({ intersection, volume });
+      const origin = intersection.point;
+      const target = origin.add(intersection.normal).add(this.randomInUnitSphere());
+      const direction = target.subtract(origin);
+
+      let colorV: Vector3 = colorToVector(this.getColorForRay(new Ray(origin, direction)));
+      colorV = colorV.multiply(.5);
+      color = vectorToColor(colorV);
     }
     else {
       color = background.getColor(ray);
@@ -88,12 +107,11 @@ export class Renderer {
       colorV = new Vector3(resultV.r, resultV.g, resultV.b).add(colorV);
     }
     colorV = colorV.divide(numSamples);
-    return <Color>{
-      r: colorV.x,
-      g: colorV.y,
-      b: colorV.z,
-      a: 1,
-    };
+    return vectorToColor(colorV);
+  }
+
+  correctGamma(color: Color): Color {
+    return vectorToColor(new Vector3(Math.sqrt(color.r), Math.sqrt(color.g), Math.sqrt(color.b)));
   }
 
   getColorForXY(x, y): Color {
@@ -101,7 +119,7 @@ export class Renderer {
     const u = x / width;
     const v = y / height;
     const ray = camera.getRay(u, v);
-    return this.shade(ray);
+    return this.getColorForRay(ray);
   }
 
   render = ({ antialias = null } = {}) => {
@@ -114,6 +132,7 @@ export class Renderer {
         let color = renderXY(x, y);
         // let color = this.antialiasForXY(x, y, { isUniform: true });
 
+        color = this.correctGamma(color);
         // TODO: do this conversion, ensure right side up
         this.setPixel(x, height - 1 - y, color);
       }
