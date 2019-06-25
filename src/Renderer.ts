@@ -10,6 +10,7 @@ import { vectorToColor, colorToVector } from './utils';
 
 const T_MIN = .001;
 const T_MAX = Infinity;
+const MAX_RAY_DEPTH = 100;
 // RHS camera (y up, x right, negative z into screen)
 export class Renderer {
   private canvas = null;
@@ -53,45 +54,42 @@ export class Renderer {
     return image;
   }
 
-  shadeNormal({ intersection, volume }: { intersection: Intersection, volume: Volume }): Color {
-    const v = intersection.normal.add(1).multiply(.5);
-    return <Color>{
-      r: v.x,
-      g: v.y,
-      b: v.z,
-      a: 1,
-    }
-  }
+  // shadeNormal({ intersection, volume }: { intersection: Intersection, volume: Volume }): Color {
+  //   const v = intersection.normal.add(1).multiply(.5);
+  //   return vectorToColor(v);
+  // }
 
-  // reject until point found inside sphere
-  randomInUnitSphere() {
-    let point: Vector3;
-    do {
-      point = new Vector3(Math.random(), Math.random(), Math.random()).subtract(.5).multiply(2);
-    } while (point.length() ** 2 >= 1)
-    return point;
-  }
-
-  getColorForRay(ray: Ray): Color {
+  getColorForRay(ray: Ray, depth: number = 0): Color {
     const { scene } = this;
     const { background } = scene;
-    let color: Color = null;
 
     const { intersection, volume } = scene.hit(ray, T_MIN, T_MAX);
-    if (intersection != null && intersection.t > 0) {
+    if (intersection != null) {
+      let color: Color = null;
+      if (depth >= MAX_RAY_DEPTH) {
+        return new Color(0, 0, 0, 1);
+      }
       // color = this.shadeNormal({ intersection, volume });
-      const origin = intersection.point;
-      const target = origin.add(intersection.normal).add(this.randomInUnitSphere());
-      const direction = target.subtract(origin);
+      // const origin = intersection.point;
+      // const target = origin.add(intersection.normal).add(Vector3.randomDirection());
+      // const direction = target.subtract(origin);
 
-      let colorV: Vector3 = colorToVector(this.getColorForRay(new Ray(origin, direction)));
-      colorV = colorV.multiply(.5);
-      color = vectorToColor(colorV);
+      // let colorV: Vector3 = colorToVector(this.getColorForRay(new Ray(origin, direction)));
+      // colorV = colorV.multiply(.5)
+      //   // .add(colorToVector(color).multiply(.5));
+      // color = vectorToColor(colorV);
+
+      if (volume.material) {
+        const { attenuation, bounceRay } = volume.material.bounce({ ray, intersection });
+        if (bounceRay) {
+          color = this.getColorForRay(bounceRay, depth + 1)//.toVector().multiply(attenuation.toVector()).toColor();
+          return color.toVector().multiply(attenuation.toVector()).toColor();
+        }
+        return attenuation;
+      }
+      return new Color(0, 0, 0, 1);
     }
-    else {
-      color = background.getColor(ray);
-    }
-    return color;
+    return background.getColor(ray);
   }
 
   antialiasForXY(x, y, { numSamples = 10, blurRadius = 1, isUniform = false } = {}): Color {
@@ -129,8 +127,7 @@ export class Renderer {
 
     for (let y: number = 0; y < height; y++) {
       for (let x: number = 0; x < width; x++) {
-        let color = renderXY(x, y);
-        // let color = this.antialiasForXY(x, y, { isUniform: true });
+        let color: Color = renderXY(x, y);
 
         color = this.correctGamma(color);
         // TODO: do this conversion, ensure right side up

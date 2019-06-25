@@ -18,7 +18,7 @@ export class Camera {
     this.vertical = new Vector3(0, target.height, 0);
   }
 
-  getRay(u: number, v: number) {
+  getRay(u: number, v: number): Ray {
     return new Ray(this.origin,
       this.lowerLeftCorner
       .add( this.horizontal.multiply(u) )

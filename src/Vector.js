@@ -1,3 +1,5 @@
+import { Color } from './Color';
+
 function Vector(x, y, z) {
   this.x = x || 0;
   this.y = y || 0;
@@ -68,6 +70,9 @@ Vector.prototype = {
     this.x = x; this.y = y; this.z = z;
     return this;
   },
+  toColor: function() {
+    return new Color(this.x, this.y, this.z, 1);
+  }
 };
 Vector.negative = function(a, b) {
   b.x = -a.x; b.y = -a.y; b.z = -a.z;

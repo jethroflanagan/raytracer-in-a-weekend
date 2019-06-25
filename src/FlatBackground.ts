@@ -15,11 +15,6 @@ export class FlatBackground {
       new Vector3(.5, .7, 1),
       t);
 
-    return <Color>{
-      r: result.x,
-      g: result.y,
-      b: result.z,
-      a: 1,
-    };
+    return result.toColor();
   }
 }

@@ -12,7 +12,7 @@ export class Image {
     for(let y: number = 0; y < height; y++) {
       this.pixels[y] = [];
       for(let x: number = 0; x < width; x++) {
-          this.pixels[y][x] = <Color>{};
+          this.pixels[y][x] = new Color();
       }
     }
   }

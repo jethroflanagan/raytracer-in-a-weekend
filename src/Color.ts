@@ -1,6 +1,10 @@
-export type Color = {
-  r: number;
-  g: number;
-  b: number;
-  a: number;
+import { Vector3 } from './Vector';
+
+export class Color {
+  constructor(public r: number = 0, public g: number = 0, public b: number = 0, public a: number = 1) {
+  }
+
+  toVector(): Vector3 {
+    return new Vector3(this.r, this.g, this.b);
+  }
 }
