@@ -5,6 +5,7 @@ import { Scene } from './Scene';
 import { Vector3 } from './Vector';
 import { Volume } from './Volume';
 import { Intersection } from './Intersection';
+import { Ray } from './Ray';
 
 // RHS camera (y up, x right, negative z into screen)
 export class Renderer {
@@ -59,24 +60,57 @@ export class Renderer {
     }
   }
 
+  shade(ray: Ray): Color {
+    const { scene } = this;
+    const { background } = scene;
+    let color: Color = null;
+
+    const { intersection, volume } = scene.hit(ray, 0, Infinity);
+    if (intersection != null && intersection.t > 0) {
+      color = this.shadeNormal({ intersection, volume });
+    }
+    else {
+      color = background.getColor(ray);
+    }
+    return color;
+  }
+
+  antialiasForXY(x, y, { numSamples = 10, blurSize = 1, isUniform = false } = {}): Color {
+    let colorV: Vector3 = new Vector3(0,0,0);
+
+    for (let s = 0; s < numSamples; s++) {
+      const angleVal = isUniform ? s / numSamples: Math.random();
+      const sampleAngle = angleVal * Math.PI * 2;
+      const resultV: Color = this.getColorForXY(
+        (x + Math.cos(sampleAngle) * blurSize),
+        (y + Math.sin(sampleAngle) * blurSize)
+      );
+      colorV = new Vector3(resultV.r, resultV.g, resultV.b).add(colorV);
+    }
+    colorV = colorV.divide(numSamples);
+    return <Color>{
+      r: colorV.x,
+      g: colorV.y,
+      b: colorV.z,
+      a: 1,
+    };
+  }
+
+  getColorForXY(x, y): Color {
+    const { width, height, camera } = this;
+    const u = x / width;
+    const v = y / height;
+    const ray = camera.getRay(u, v);
+    return this.shade(ray);
+  }
+
   render = () => {
     const { ctx, renderBuffer, width, height, camera, scene } = this;
     const { background } = scene;
     for (let y: number = 0; y < height; y++) {
       for (let x: number = 0; x < width; x++) {
-        let color = null;
-        // TODO: do this conversion properly
-        const u = x / width;
-        const v = y / height;
-        const ray = camera.getRay(u, v);
-    
-        const { intersection, volume } = scene.hit(ray, 0, Infinity);
-        if (intersection != null && intersection.t > 0) {
-          color = this.shadeNormal({ intersection, volume });
-        }
-        else {
-          color = background.getColor(ray);
-        }
+        // let color = this.getColorForXY(x, y);
+        let color = this.antialiasForXY(x, y, { isUniform: true });
 
         // TODO: do this conversion, ensure right side up
         this.setPixel(x, height - 1 - y, color);
