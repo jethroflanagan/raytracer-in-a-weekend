@@ -23,13 +23,13 @@ export class MetalMaterial implements Material {
     const attenuation = this.albedo;
     let bounceRay = null;
     if (Math.random() < this.reflectance) {
-      const target = this.reflect(intersection.normal, ray.direction.unit());//.add(intersection.point));
-
-      bounceRay = new Ray(intersection.point, target) //.add( Vector3.randomDirection().multiply(this.fuzziness)) ); //;
-      // const reflectionChance = bounceRay.direction.dot(intersection.normal) > 0;
-      // if (!reflectionChance) {
-      //   bounceRay = null;
-      // }
+      let target = this.reflect(intersection.normal, ray.direction.unit());
+      target = target.add( Vector3.randomDirection().multiply(this.fuzziness));
+      bounceRay = new Ray(intersection.point, target)
+      const reflectionChance = bounceRay.direction.dot(intersection.normal) > 0;
+      if (!reflectionChance) {
+        bounceRay = null;
+      }
     }
     return {
       attenuation,
