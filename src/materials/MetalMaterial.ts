@@ -24,7 +24,7 @@ export class MetalMaterial implements Material {
     let bounceRay = null;
     if (Math.random() < this.reflectance) {
       let target = this.reflect(intersection.normal, ray.direction.unit());
-      target = target.add( Vector3.randomDirection().multiply(this.fuzziness));
+      target = target.add( Vector3.randomDirection().multiply(this.fuzziness).multiply(1-this.reflectance));
       bounceRay = new Ray(intersection.point, target)
       const reflectionChance = bounceRay.direction.dot(intersection.normal) > 0;
       if (!reflectionChance) {

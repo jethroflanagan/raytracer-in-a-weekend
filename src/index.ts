@@ -33,13 +33,13 @@ function createScene() {
   const background = new FlatBackground();
   const sphere = new Sphere({
     center: new Vector3(-3, -.5, -35),
-    radius: 1.5,
-    material: new MetalMaterial({ albedo: new Color(.5,.5,.5), reflectance: 1, fuzziness: 0.01 }),
+    radius: 3.5,
+    material: new MetalMaterial({ albedo: new Color(.5,.5,.5), reflectance: .8, fuzziness: 0.1 }),
   });
   const sphere2 = new Sphere({ center: new Vector3(.5, -1, -10), radius: .5, material: new LambertMaterial(new Color(.9, .34, .54)) });
   const sphere3 = new Sphere({ center: new Vector3(0, -100, -50), radius: 100, material: new LambertMaterial(new Color(.5, .8,.5)) });
   const sphere4 = new Sphere({ center: new Vector3(5.5, .1, -20), radius: 2, material: new NormalMaterial(new Color(.5, .2,.5)) });
-  const sphere5 = new Sphere({ center: new Vector3(2.5, .7, -40), radius: 1.5, material: new LambertMaterial(new Color(.1, .34, .94)) });
+  const sphere5 = new Sphere({ center: new Vector3(4.5, 2, -40), radius: 2.5, material: new LambertMaterial(new Color(.1, .34, .94)) });
 
   const scene = new Scene();
   scene.addBackground(background);
