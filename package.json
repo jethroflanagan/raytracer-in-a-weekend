@@ -5,6 +5,7 @@
   "main": "index.html",
   "scripts": {
     "start": "parcel index.html --open",
+    "start-reload": "parcel watch index.html --no-hmr & live-server --port=1234 ./dist/",
     "build": "parcel build index.html"
   },
   "devDependencies": {
@@ -12,6 +13,7 @@
     "typescript": "^3.5.2"
   },
   "dependencies": {
+    "live-server": "^1.2.1",
     "math3d": "^0.2.2"
   }
 }
