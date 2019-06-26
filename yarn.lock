@@ -1251,7 +1251,7 @@ chalk@^2.0.0, chalk@^2.0.1, chalk@^2.1.0, chalk@^2.3.1, chalk@^2.4.1, chalk@^2.4
     escape-string-regexp "^1.0.5"
     supports-color "^5.3.0"
 
-chokidar@^2.0.3:
+chokidar@^2.0.0, chokidar@^2.0.3:
   version "2.1.6"
   resolved "https://registry.yarnpkg.com/chokidar/-/chokidar-2.1.6.tgz#b6cad653a929e244ce8a834244164d241fa954c5"
   integrity sha512-V2jUo67OKkc6ySiRpJrjlpJKl9kDuG+Xb8VgsGzb+aEouhgS1D0weyPU4lEzdAcsCAvrih2J2BqyXqHWvVLw5g==
@@ -4384,6 +4384,13 @@ safer-eval@^1.3.0:
   integrity sha512-j/qb0rtnwTp5V1D7nR0Ns/14HU8OiHPaoZNJhM+Lfmv1nbXZCXG9LHaVW157agEocdSVAeeRNddK/yuWfalzGQ==
   dependencies:
     clones "^1.2.0"
+
+sass@^1.22.0:
+  version "1.22.0"
+  resolved "https://registry.yarnpkg.com/sass/-/sass-1.22.0.tgz#70fcfa86d78450d98a54c7459d3f2c93d7abf30b"
+  integrity sha512-6BEkdLYPP26cKggrMuBjMWpguMFgeayW+35LGnzXqCipm86fUboSVAdRLFKRpk1ClMNzFZums6kKkjgWF00WoA==
+  dependencies:
+    chokidar "^2.0.0"
 
 sax@^1.2.4, sax@~1.2.4:
   version "1.2.4"

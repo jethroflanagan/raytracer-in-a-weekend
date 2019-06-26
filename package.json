@@ -9,6 +9,7 @@
   },
   "devDependencies": {
     "parcel-bundler": "^1.6.1",
+    "sass": "^1.22.0",
     "typescript": "^3.5.2"
   },
   "dependencies": {
