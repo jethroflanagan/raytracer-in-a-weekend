@@ -90,7 +90,7 @@ export class Renderer {
       // error
       return new Color(1, 0, 0, 1);
     }
-    return background.getColor(ray);
+    return new Color(1,1,1,0)//background.getColor(ray);
   }
 
   antialiasForXY(x, y, { numSamples = 10, blurRadius = 1, isUniform = false } = {}): Color {
@@ -122,7 +122,6 @@ export class Renderer {
   }
 
   render = ({ antialias = null } = {}) => {
-    console.time('render');
     const { ctx, renderBuffer, width, height } = this;
 
     const renderXY = antialias ? (x, y) => this.antialiasForXY(x, y, { ...antialias }) : (x, y) => this.getColorForXY(x, y);

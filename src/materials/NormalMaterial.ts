@@ -15,8 +15,10 @@ export class NormalMaterial implements Material {
     const attenuation = colorV.toColor();
     let bounceRay = null;
 
+    // adds self-shadow
     const target = intersection.point.add(intersection.normal).add(Vector3.randomDirection());
       bounceRay = new Ray(intersection.point, target);
+
     return {
       attenuation,
       bounceRay,
