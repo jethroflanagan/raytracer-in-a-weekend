@@ -10,7 +10,7 @@ import { vectorToColor, colorToVector } from './utils';
 
 const T_MIN = .001;
 const T_MAX = Infinity;
-const MAX_RAY_DEPTH = 100;
+const MAX_RAY_DEPTH = 5;
 // RHS camera (y up, x right, negative z into screen)
 export class Renderer {
   private canvas = null;
@@ -62,13 +62,13 @@ export class Renderer {
   getColorForRay(ray: Ray, depth: number = 0): Color {
     const { scene } = this;
     const { background } = scene;
-
+    if (depth >= MAX_RAY_DEPTH) {
+      return new Color(0, 0, 0, 1);
+    }
     const { intersection, volume } = scene.hit(ray, T_MIN, T_MAX);
     if (intersection != null) {
       let color: Color = null;
-      if (depth >= MAX_RAY_DEPTH) {
-        return new Color(0, 0, 0, 1);
-      }
+
       // color = this.shadeNormal({ intersection, volume });return color;
       // const origin = intersection.point;
       // const target = origin.add(intersection.normal).add(Vector3.randomDirection());
@@ -80,10 +80,21 @@ export class Renderer {
       // color = vectorToColor(colorV);
 
       if (volume.material) {
-        const { attenuation, bounceRay } = volume.material.bounce({ ray, intersection });
+        const { attenuation, bounceRay, bounces } = volume.material.bounce({ ray, intersection });
         if (bounceRay) {
           color = this.getColorForRay(bounceRay, depth + 1)//.toVector().multiply(attenuation.toVector()).toColor();
           return color.toVector().multiply(attenuation.toVector()).toColor();
+        }
+        if (bounces) {
+          const br = bounces.map(bounceRay => {
+            color = this.getColorForRay(bounceRay, depth + 1)//.toVector().multiply(attenuation.toVector()).toColor();
+            return color.toVector().multiply(attenuation.toVector()).toColor();
+          });
+          let c = new Vector3();
+          for (let i =0;i< br.length;i++) {
+            c = c.add(br[i].toVector());
+          }
+          return c.divide(br.length).toColor();
         }
         return attenuation;
       }
