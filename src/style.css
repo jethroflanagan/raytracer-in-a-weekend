@@ -11,4 +11,5 @@ html, body {
   top: 0;
   left: 0;
   mix-blend-mode: lighten;
+  filter: blur(1px);
 }

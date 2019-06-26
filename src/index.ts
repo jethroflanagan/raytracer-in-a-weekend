@@ -1,17 +1,14 @@
-import { Scene } from './Scene';
-import { FlatBackground } from './FlatBackground';
-import { Vector3 } from './Vector';;
-import { Color } from './Color';
-import { Renderer } from './Renderer';
-import { Image } from './Image';
-import { Ray } from './Ray';
-import { Sphere } from './Sphere';
 import { Camera, RenderTarget } from './Camera';
-import { NormalMaterial } from './materials/NormalMaterial';
+import { Color } from './Color';
+import { FlatBackground } from './FlatBackground';
 import { LambertMaterial } from './materials/LambertMaterial';
 import { MetalMaterial } from './materials/MetalMaterial';
-import { randomInUnitSphere } from './utils';
-import "./style.scss";
+import { NormalMaterial } from './materials/NormalMaterial';
+import { Renderer } from './Renderer';
+import { Scene } from './Scene';
+import { Sphere } from './Sphere';
+import { Vector3 } from './Vector';
+import "./style.css";
 
 // TODO: add to scene and move render code into renderer
 function createScene(canvas) {
@@ -69,4 +66,4 @@ function render(numSamples=1) {
   console.timeEnd('sampleRender')
 }
 
-render(4);
+render(1);
