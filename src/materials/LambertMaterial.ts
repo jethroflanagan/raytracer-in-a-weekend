@@ -16,7 +16,7 @@ export class LambertMaterial implements Material {
     const attenuation = this.albedo;
     let bounceRay = null;
     // if (Math.random() < this.reflectance) {
-      const target = intersection.point.add(intersection.normal).add(Vector3.randomDirection());
+      const target = intersection.normal.add(Vector3.randomDirection());
       bounceRay = new Ray(intersection.point, target);
     // }
     return {
