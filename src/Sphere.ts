@@ -28,7 +28,7 @@ export class Sphere implements Volume {
       return null;
     }
 
-    const partialCalc = Math.sqrt(b ** 2 - a * c);
+    const partialCalc = -Math.sqrt(discriminant);
     let point = null;
 
     let t = (-b - partialCalc) / a;
