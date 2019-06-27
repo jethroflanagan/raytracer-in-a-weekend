@@ -122,6 +122,7 @@ export class Renderer {
   }
 
   render = ({ antialias = null } = {}) => {
+    const renderStart = performance.now();
     const { ctx, renderBuffer, width, height } = this;
 
     const renderXY = antialias ? (x, y) => this.antialiasForXY(x, y, { ...antialias }) : (x, y) => this.getColorForXY(x, y);
@@ -137,6 +138,6 @@ export class Renderer {
       }
     }
     ctx.putImageData(renderBuffer, 0, 0);
-    console.timeEnd('render');
+    console.log('render time: ' + (performance.now() - renderStart));
   }
 }

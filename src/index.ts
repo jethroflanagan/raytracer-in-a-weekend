@@ -16,17 +16,18 @@ import { DialectricMaterial } from './materials/DialectricMaterial';
 function createScene(canvas) {
   const width = canvas.width;
   const height = canvas.height;
-  const aspectRatio = height / width;
+  const aspectRatio = width / height;
 
   // const image = new Image(width, height);
-  const renderWidth = 200;
-  const renderTarget: RenderTarget = <RenderTarget>{
-    width: renderWidth,
-    height: renderWidth * aspectRatio,
-    depth: renderWidth * 1.5,
-  };// FOV?
-  const origin = new Vector3(0,0,0);
-  const camera: Camera = new Camera(origin, renderTarget);
+  const cameraOrigin = new Vector3(0,0,0);
+  const cameraTarget = new Vector3(0,0,-20);
+  const camera: Camera = new Camera({ 
+    origin: cameraOrigin,
+    aspectRatio,
+    verticalFOV: 30,
+    lookAt: cameraTarget,
+    // up: new Vector3(1, 0, 1),
+  });
 
   const background = new FlatBackground();
   const sphere = new Sphere({
@@ -49,7 +50,7 @@ function createScene(canvas) {
     radius: 100,
     material: new LambertMaterial({ albedo: new Color(.5, .8,.5) }),
   });
-  const sphere4 = new Sphere({ 
+  const sphere4 = new Sphere({
     center: new Vector3(5.5, .1, -20), 
     radius: 2, 
     material: new NormalMaterial(),
@@ -80,12 +81,6 @@ function createScene(canvas) {
   // renderer.render({ antialias: { numSamples: 5, blurRadius: 1, isUniform: true } });
   renderer.render();
 }
-
-
-
-// function lerp(start, end, t) {
-//   return (1 - t) * start + t * end;
-// }
 
 function render(numSamples=1) {
   console.time('sampleRender')
