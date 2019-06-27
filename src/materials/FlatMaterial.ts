@@ -4,8 +4,10 @@ import { Vector3 } from '../Vector';
 import { Intersection } from './../Intersection';
 import { Material } from './Material';
 
-export class LambertMaterial implements Material {
-  reflectance = .3;
+/**
+ * Won't receive shadows
+ */
+export class FlatMaterial implements Material {
   albedo: Color;
 
   constructor({ albedo }: { albedo: Color }) {
@@ -17,11 +19,6 @@ export class LambertMaterial implements Material {
     // const color = vectorToColor(colorV);
     const attenuation = this.albedo;
     let bounceRay = null;
-    // if (Math.random() < this.reflectance) {
-      //TODO: remove muliplier
-      const target = intersection.normal.add(Vector3.randomDirection().multiply(1-this.reflectance));
-      bounceRay = new Ray(intersection.point, target);
-    // }
     return {
       attenuation,
       bounceRay,

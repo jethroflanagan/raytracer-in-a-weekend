@@ -90,7 +90,7 @@ export class Renderer {
       // error
       return new Color(1, 0, 0, 1);
     }
-    return new Color(1,1,1,0)//background.getColor(ray);
+    return background.getColor(ray);
   }
 
   antialiasForXY(x, y, { numSamples = 10, blurRadius = 1, isUniform = false } = {}): Color {
