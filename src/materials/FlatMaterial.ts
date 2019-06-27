@@ -8,8 +8,10 @@ import { Material } from './Material';
  * Won't receive shadows
  */
 export class FlatMaterial implements Material {
+  albedo: Color;
 
-  constructor(public albedo: Color = null) {
+  constructor({ albedo }: { albedo: Color }) {
+    this.albedo = albedo;
   }
 
   bounce({ ray, intersection }: { ray: Ray, intersection: Intersection }): { bounceRay: Ray, attenuation: Color } {

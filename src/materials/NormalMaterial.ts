@@ -6,7 +6,7 @@ import { Material } from './Material';
 
 export class NormalMaterial implements Material {
 
-  constructor(public albedo: Color = null) {
+  constructor() {
   }
 
   bounce({ ray, intersection }: { ray: Ray, intersection: Intersection }): { bounceRay: Ray, attenuation: Color } {
