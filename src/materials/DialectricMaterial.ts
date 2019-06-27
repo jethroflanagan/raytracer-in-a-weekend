@@ -26,19 +26,42 @@ export class DialectricMaterial implements Material {
     this.refractiveIndex = refractiveIndex;
   }
 
+  // Cristophe Schlick aproximiation
+  getReflectionProbability({ cosine }) {
+    let r0 = (1 - this.refractiveIndex) / (1 + this.refractiveIndex);
+    r0 = r0 ** 2;
+    return r0 + (1 - r0) * ((1 - cosine) ** 5);
+  }
+
   bounce({ ray, intersection }: { ray: Ray, intersection: Intersection }): { bounceRay: Ray, attenuation: Color } {
     const attenuation = this.albedo;
     let bounceRay = null;
 
-    let outwardNormal: Vector3 = intersection.normal;
-    let niOverNt: number = this.refractiveIndex;
-    if (ray.direction.dot(intersection.normal) <= 0) {
-      outwardNormal = outwardNormal.multiply(-1);
-      niOverNt = 1 / niOverNt;
+    let outwardNormal: Vector3 = null;
+    let niOverNt: number = null;
+    let cosine: number = null;
+    const dotDirectionNormal = ray.direction.dot(intersection.normal);
+    if (dotDirectionNormal > 0) {
+      outwardNormal = intersection.normal;
+      niOverNt = this.refractiveIndex;
+      cosine = this.refractiveIndex * dotDirectionNormal / ray.direction.length();
+    }
+    else  {
+      outwardNormal = intersection.normal.multiply(-1);
+      niOverNt = 1 / this.refractiveIndex;
+      cosine = - dotDirectionNormal / ray.direction.length();
     }
 
     const refracted = refractVector({ direction: ray.direction, normal: outwardNormal, niOverNt });
+    let reflectProbability: number = null;
     if (refracted.discriminant > 0) {
+      reflectProbability = this.getReflectionProbability({ cosine });
+    }
+    else {
+      reflectProbability = 1;
+    }
+
+    if (Math.random() >= reflectProbability) {
       bounceRay = new Ray(intersection.point, refracted.direction);
     }
     else {
