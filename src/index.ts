@@ -20,13 +20,16 @@ function createScene(canvas) {
 
   // const image = new Image(width, height);
   const cameraOrigin = new Vector3(0,0,0);
-  const cameraTarget = new Vector3(0,0,-20);
-  const camera: Camera = new Camera({ 
+  const cameraTarget = new Vector3(-3, -.5, -30);
+  const focalDistance = cameraTarget.subtract(cameraOrigin).length();
+  const camera: Camera = new Camera({
     origin: cameraOrigin,
     aspectRatio,
     verticalFOV: 30,
     lookAt: cameraTarget,
     // up: new Vector3(1, 0, 1),
+    aperture: 2,
+    focalDistance,
   });
 
   const background = new FlatBackground();
