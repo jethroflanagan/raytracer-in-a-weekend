@@ -58,7 +58,7 @@ function createScene(canvas) {
     radius: 2, 
     material: new NormalMaterial(),
   });
-  const sphere5 = new Sphere({ 
+  const sphere5 = new Sphere({
     center: new Vector3(4.5, 2, -40), 
     radius: 2.5, 
     material: new LambertMaterial({ albedo: new Color(.1, .34, .94) }),
@@ -82,16 +82,9 @@ function createScene(canvas) {
   const renderer = new Renderer({ canvas, camera, scene });
 
   // renderer.render({ antialias: { numSamples: 5, blurRadius: 1, isUniform: true } });
-  renderer.render();
+  renderer.render({ quality: 1 });
 }
 
-function render(numSamples=1) {
-  console.time('sampleRender')
+(function run() {
   createScene(document.getElementById('render'));
-  for(let i = 2; i <= numSamples; i++) {
-    createScene(document.getElementById('render' + i));
-  }
-  console.timeEnd('sampleRender')
-}
-
-render(1);
+})();
