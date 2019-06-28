@@ -1,4 +1,4 @@
-import { Vector3 } from "../../Vector";
+import { Vector3 } from "src/Vector";
 
 export function refractVector({ direction, normal, niOverNt }: { direction: Vector3, normal: Vector3, niOverNt: number }):
   { discriminant: number, direction: Vector3 } {

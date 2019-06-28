@@ -1,13 +1,11 @@
-import { Vector3 } from './Vector';
-import { Ray } from './Ray';
-import { Color } from './Color';
+import { Ray } from 'src/Ray';
+import { Vector3 } from 'src/Vector';
 
 export class FlatBackground {
   constructor() {
   }
 
   getColor(ray: Ray) {
-    // return new Color(.8,1,1);
     const unitDirection = ray.direction.unit();
     const t = (1 + unitDirection.y) * .5;
 

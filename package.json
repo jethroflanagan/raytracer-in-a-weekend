@@ -16,6 +16,10 @@
   },
   "dependencies": {
     "live-server": "^1.2.1",
-    "math3d": "^0.2.2"
+    "math3d": "^0.2.2",
+    "src": "^1.1.2"
+  },
+  "alias": {
+    "src": "./src"
   }
 }

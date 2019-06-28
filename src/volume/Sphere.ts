@@ -1,8 +1,8 @@
-import { Material } from './materials/Material';
-import { Vector3 } from './Vector';
-import { Volume } from './Volume';
-import { Ray } from './Ray';
-import { Intersection } from './Intersection';
+import { Material } from 'src/material/Material';
+import { Vector3 } from 'src/Vector';
+import { Volume } from 'src/volume/Volume';
+import { Ray } from 'src/Ray';
+import { Intersection } from 'src/Intersection';
 
 export class Sphere implements Volume {
   center: Vector3;
