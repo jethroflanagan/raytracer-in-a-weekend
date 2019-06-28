@@ -81,8 +81,11 @@ function createScene(canvas) {
 
   const renderer = new Renderer({ canvas, camera, scene });
 
-  // renderer.render({ antialias: { numSamples: 5, blurRadius: 1, isUniform: true } });
-  renderer.render({ quality: 1 });
+  renderer.render({
+    antialias: { numSamples: 10, blurRadius: 1, isUniform: false },
+    quality: 10,
+  });
+  // renderer.render({ quality: 1 });
 }
 
 (function run() {

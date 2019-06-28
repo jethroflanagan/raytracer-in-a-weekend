@@ -1,12 +1,11 @@
+import { Camera } from './Camera';
 import { Color } from './Color';
 import { Image } from './Image';
-import { Camera } from './Camera';
+import { Intersection } from './Intersection';
+import { Ray } from './Ray';
 import { Scene } from './Scene';
 import { Vector3 } from './Vector';
 import { Volume } from './Volume';
-import { Intersection } from './Intersection';
-import { Ray } from './Ray';
-import { vectorToColor, colorToVector } from './utils';
 
 const T_MIN = .001;
 const T_MAX = Infinity;
@@ -126,11 +125,11 @@ export class Renderer {
       colorV = new Vector3(resultV.r, resultV.g, resultV.b).add(colorV);
     }
     colorV = colorV.divide(numSamples);
-    return vectorToColor(colorV);
+    return colorV.toColor();
   }
 
   correctGamma(color: Color): Color {
-    return vectorToColor(new Vector3(Math.sqrt(color.r), Math.sqrt(color.g), Math.sqrt(color.b)));
+    return new Vector3(Math.sqrt(color.r), Math.sqrt(color.g), Math.sqrt(color.b)).toColor();
   }
 
   getColorForXY(x, y): Color {
@@ -147,9 +146,9 @@ export class Renderer {
 
     const renderXY = antialias ? (x, y) => this.antialiasForXY(x, y, { ...antialias }) : (x, y) => this.getColorForXY(x, y);
 
+    // // old
     // for (let y: number = 0; y < height; y++) {
     //   for (let x: number = 0; x < width; x++) {
-
     //     let color: Color;
     //     let colorPasses: Vector3 = new Vector3(0,0,0);
     //     for (let q = 0; q < quality; q++) {
@@ -157,21 +156,35 @@ export class Renderer {
     //       colorPasses = colorPasses.add(pass.toVector());
     //     }
     //     color = colorPasses.divide(quality).toColor();
-
     //     // color = this.correctGamma(color);
-
     //     // TODO: do this conversion, ensure right side up
     //     this.setPixel(x, height - 1 - y, color);
     //   }
     // }
     // ctx.putImageData(renderBuffer, 0, 0);
 
+    // // normal
+    // for (let y: number = 0; y < height; y += blockSize) {
+    //   for (let x: number = 0; x < width; x += blockSize) {
+    //     setTimeout(() => {
+    //       this.renderBlock({ x, y, width: blockSize, height: blockSize }, { antialias, quality });
+    //     }, y * width / blockSize + x);
+    //   }
+    // }
+
+    const getDist = (x, y) => Math.sqrt( (x - width / 2) ** 2 + (y - height / 2) ** 2 );
+    const position = [];
     for (let y: number = 0; y < height; y += blockSize) {
       for (let x: number = 0; x < width; x += blockSize) {
-        setTimeout(() => {
-          this.renderBlock({ x, y, width: blockSize, height: blockSize }, { antialias, quality });
-        }, y * width / blockSize + x);
+        position.push({ x, y, distance: getDist(x, y) });
       }
+    };
+    position.sort((a,b) => a.distance - b.distance);
+    for (let i: number = 0; i < position.length; i++) {
+      const { x, y } = position[i];
+      setTimeout(() => {
+        this.renderBlock({ x, y, width: blockSize, height: blockSize }, { antialias, quality });
+      }, i * 100);
     }
 
     console.log('render time: ' + (performance.now() - renderStart));
