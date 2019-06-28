@@ -7,7 +7,7 @@ export class Scene {
   children: Volume[] = [];
   background: FlatBackground;
 
-  addChild(child: Volume, meta: any) {
+  addChild(child: Volume, meta?: any) {
     this.children.push(child);
   }
 
