@@ -1,12 +1,12 @@
-import { Color } from '../Color';
-import { Ray } from "../Ray";
-import { Vector3 } from '../Vector';
-import { Intersection } from './../Intersection';
+import { Color } from 'src/Color';
+import { Ray } from "src/Ray";
+import { Vector3 } from 'src/Vector';
+import { Intersection } from 'src/Intersection';
 import { Material } from './Material';
 
 export class NormalMaterial implements Material {
 
-  constructor(public albedo: Color = null) {
+  constructor() {
   }
 
   bounce({ ray, intersection }: { ray: Ray, intersection: Intersection }): { bounceRay: Ray, attenuation: Color } {

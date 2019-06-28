@@ -1,13 +1,15 @@
-import { Color } from '../Color';
-import { Ray } from "../Ray";
-import { Vector3 } from '../Vector';
-import { Intersection } from './../Intersection';
+import { Color } from 'src/Color';
+import { Ray } from "src/Ray";
+import { Vector3 } from 'src/Vector';
+import { Intersection } from 'src/Intersection';
 import { Material } from './Material';
 
 export class LambertMaterial implements Material {
   reflectance = .3;
+  albedo: Color;
 
-  constructor(public albedo: Color = null) {
+  constructor({ albedo }: { albedo: Color }) {
+    this.albedo = albedo;
   }
 
   bounce({ ray, intersection }: { ray: Ray, intersection: Intersection }): { bounceRay: Ray, attenuation: Color } {
