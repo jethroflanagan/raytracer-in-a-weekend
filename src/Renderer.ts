@@ -1,8 +1,8 @@
-import { Camera } from 'src/scene/Camera';
 import { Color } from 'src/Color';
 import { Image } from 'src/Image';
 import { Intersection } from 'src/Intersection';
 import { Ray } from 'src/Ray';
+import { Camera } from 'src/scene/Camera';
 import { Scene } from 'src/scene/Scene';
 import { Vector3 } from 'src/Vector';
 import { Volume } from 'src/volume/Volume';
@@ -21,6 +21,7 @@ export type RenderOptions = {
   antialias?: AntialiasOptions,
   quality?: number,
   blockSize?: number,
+  resolution?: number, // 0.1 -> 5+ (width,height multiplier)
 };
 
 // RHS camera (y up, x right, negative z into screen)
@@ -140,38 +141,20 @@ export class Renderer {
     return this.getColorForRay(ray);
   }
 
-  render = ({ antialias = null, quality = 1, blockSize = 50 }: RenderOptions = <RenderOptions>{}) => {
+  render = async ({ antialias = null, quality = 1, blockSize = 50, resolution = 1 }: RenderOptions = <RenderOptions>{}) => {
     const renderStart = performance.now();
-    const { ctx, renderBuffer, width, height } = this;
+    const { ctx, canvas, width, height } = this;
 
-    const renderXY = antialias ? (x, y) => this.antialiasForXY(x, y, { ...antialias }) : (x, y) => this.getColorForXY(x, y);
+    if (resolution !== 1) {
+      canvas.width = Math.round(width * resolution)
+      canvas.height = Math.round(height * resolution)
+      canvas.setAttribute('style', `transform: scale(${1/resolution})`);
+    }
+    else {
+      canvas.setAttribute('style', '');
+    }
 
-    // // old
-    // for (let y: number = 0; y < height; y++) {
-    //   for (let x: number = 0; x < width; x++) {
-    //     let color: Color;
-    //     let colorPasses: Vector3 = new Vector3(0,0,0);
-    //     for (let q = 0; q < quality; q++) {
-    //       let pass: Color = renderXY(x, y);
-    //       colorPasses = colorPasses.add(pass.toVector());
-    //     }
-    //     color = colorPasses.divide(quality).toColor();
-    //     // color = this.correctGamma(color);
-    //     // TODO: do this conversion, ensure right side up
-    //     this.setPixel(x, height - 1 - y, color);
-    //   }
-    // }
-    // ctx.putImageData(renderBuffer, 0, 0);
-
-    // // normal
-    // for (let y: number = 0; y < height; y += blockSize) {
-    //   for (let x: number = 0; x < width; x += blockSize) {
-    //     setTimeout(() => {
-    //       this.renderBlock({ x, y, width: blockSize, height: blockSize }, { antialias, quality });
-    //     }, y * width / blockSize + x);
-    //   }
-    // }
-
+    // render blocks from center
     const getDist = (x, y) => Math.sqrt( (x - width / 2) ** 2 + (y - height / 2) ** 2 );
     const position = [];
     for (let y: number = 0; y < height; y += blockSize) {
@@ -180,28 +163,37 @@ export class Renderer {
       }
     };
     position.sort((a,b) => a.distance - b.distance);
+    
     for (let i: number = 0; i < position.length; i++) {
       const { x, y } = position[i];
-      setTimeout(() => {
-        this.renderBlock({ x, y, width: blockSize, height: blockSize }, { antialias, quality });
-      }, i * 100);
+      await  this.renderBlock({ x, y, width: blockSize, height: blockSize }, { antialias, quality, resolution });
     }
 
+
+    // ctx.drawImage( resolutionCanvas, 0, 0, width, height );
+
+    // else {
+    //   ctx.drawImage( canvas, 0, 0, Math.round(width / resolution), Math.round(height / resolution) );
+    // }
     console.log('render time: ' + (performance.now() - renderStart));
   }
 
-  renderBlock(area: { x, y, width, height }, { antialias = null, quality = 1 }) {
+  renderBlock(area: { x, y, width, height }, { antialias, quality, resolution }) {
     // const renderStart = performance.now();
     const { ctx, width, height } = this;
-    const renderBuffer = this.ctx.createImageData(area.width, area.height);
+    const blockX = area.x * resolution;
+    const blockY = area.y * resolution;
+    const blockWidth = area.width * resolution;
+    const blockHeight = area.height * resolution;
+    const renderBuffer = this.ctx.createImageData(blockWidth, blockHeight);
     const renderXY = antialias ? (x, y) => this.antialiasForXY(x, y, { ...antialias }) : (x, y) => this.getColorForXY(x, y);
-    for (let y: number = area.y; y < area.y + area.height; y++) {
-      for (let x: number = area.x; x < area.x + area.width; x++) {
+    for (let y: number = blockY; y < blockY + blockHeight; y++) {
+      for (let x: number = blockX; x < blockX + blockHeight; x++) {
 
         let color: Color;
         let colorPasses: Vector3 = new Vector3(0, 0, 0);
         for (let q = 0; q < quality; q++) {
-          let pass: Color = renderXY(x, y);
+          let pass: Color = renderXY(x / resolution, y / resolution);
           colorPasses = colorPasses.add(pass.toVector());
         }
         color = colorPasses.divide(quality).toColor();
@@ -209,11 +201,18 @@ export class Renderer {
         // color = this.correctGamma(color);
 
         // TODO: do this conversion, ensure right side up
-        this.setPixel({ x: x - area.x, y: area.y + area.height - 1 - y, color, renderBuffer, width: area.width });
+        this.setPixel({ x: (x - blockX), y: (blockY + blockHeight - 1 - y), color, renderBuffer, width: blockWidth });
       }
     }
 
-    ctx.putImageData(renderBuffer, area.x, height - area.y - area.height);
+    const p = new Promise(resolve => {
+      // needs to be setTimeout to prevent the putImageData from locking up the processor
+      setTimeout(() => {
+        ctx.putImageData(renderBuffer, area.x * resolution, (height - area.y - area.height)  * resolution);
+        resolve();
+      }, 1);
+    });
+    return p;
     // console.log('block time: ' + (performance.now() - renderStart));
     // return renderBuffer;
   }

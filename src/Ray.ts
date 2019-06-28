@@ -1,8 +1,9 @@
 import { Vector3 } from 'src/Vector';
 
 export class Ray {
-
-  constructor(public origin: Vector3, public direction: Vector3) {
+  time;
+  constructor(public origin: Vector3, public direction: Vector3, options: { time?: number } = {}) {
+    this.time = options.time;
   }
 
   pointAtParameter(t: number = 1) {

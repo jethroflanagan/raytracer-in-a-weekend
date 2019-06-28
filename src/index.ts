@@ -11,15 +11,16 @@ function render(canvas) {
   const aspectRatio = width / height;
 
   // const { scene, camera } = createDemoScene({ aspectRatio, width, height });
-  // const { scene, camera } = createTestScene({ aspectRatio, width, height });
-  const { scene, camera } = createBookCoverScene({ aspectRatio, width, height });
+  const { scene, camera } = createTestScene({ aspectRatio, width, height });
+  // const { scene, camera } = createBookCoverScene({ aspectRatio, width, height });
   const renderer = new Renderer({ canvas, camera, scene });
 
-  renderer.render({
-    antialias: { numSamples: 10, blurRadius: .5, isUniform: true },
-    quality: 20,
-  });
-  // renderer.render({ quality: 1 });
+  // renderer.render({
+  //   antialias: { numSamples: 10, blurRadius: .5, isUniform: true },
+  //   quality: 20,
+  //   resolution: 1,
+  // });
+  renderer.render({ quality: 1, resolution: .5 });
 }
 
 (function run() {

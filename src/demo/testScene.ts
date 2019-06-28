@@ -11,7 +11,7 @@ import { FlatMaterial } from 'src/material/FlatMaterial';
 import { Scene } from 'src/scene/Scene';
 
 export function create({ aspectRatio, width, height }) {
-  const cameraOrigin = new Vector3(10,10,0);
+  const cameraOrigin = new Vector3(10,1,0);
   const cameraTarget = new Vector3(0, 0, -30);
   const focalDistance = cameraTarget.subtract(cameraOrigin).length();
   const camera: Camera = new Camera({

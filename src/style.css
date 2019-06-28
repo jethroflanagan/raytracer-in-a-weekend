@@ -5,11 +5,6 @@ html, body {
   position: relative;
   margin: 5px;
 }
-.canvas {
-  border: 1px solid #ff0000;
-  position: absolute;
-  top: 0;
-  left: 0;
-  mix-blend-mode: lighten;
-  filter: blur(1px);
+.render {
+  transform-origin: top left;
 }

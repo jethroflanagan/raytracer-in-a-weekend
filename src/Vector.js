@@ -1,5 +1,6 @@
 import { Color } from './Color';
 
+// Taken from https://evanw.github.io/lightgl.js/docs/vector.html
 function Vector(x, y, z) {
   this.x = x || 0;
   this.y = y || 0;
