@@ -12,6 +12,7 @@ import "./style.css";
 import { FlatMaterial } from './materials/FlatMaterial';
 import { DialectricMaterial } from './materials/DialectricMaterial';
 import { Ray } from './Ray';
+import { getRandomPointInCircle } from './utils';
 
 // TODO: add to scene and move render code into renderer
 function render(canvas) {
@@ -182,14 +183,7 @@ function createComplexScene({ aspectRatio, width, height }) {
         // return new LambertMaterial({ albedo: new Color(Math.random(), Math.random(), Math.random()) });
   }
   const positions = [];
-  const genPoint = ({ size }) => {
-    const angle = Math.random() * Math.PI * 2;
-    // const distance = areaStart + size + Math.random() * area;
-    const distance = area * Math.sqrt(Math.random()) + areaStart + size;
-    const x = Math.cos(angle) * distance;
-    const z = Math.sin(angle) * distance;
-    return {x, z}
-  }
+
   for (let i = 0; i < 70; i++) {
     const size = .5 + Math.random() * 1;
     // const angle = Math.random() * Math.PI * 2;
@@ -197,7 +191,7 @@ function createComplexScene({ aspectRatio, width, height }) {
     // const distance = area * Math.sqrt(Math.random()) + areaStart;
     // const x = Math.cos(angle) * distance;
     // const z = Math.sin(angle) * distance;
-    const { x , z } = genPoint({ size })
+    const { x , y: z } = getRandomPointInCircle({ radius: size })
     // positions.push(
 // const scene = createComplexScene();
     let center = new Vector3(x * positionScale, .1, z * positionScale - 28);
