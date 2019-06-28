@@ -15,18 +15,6 @@ const setupPlaceOnSurface = ({ surfaceCenter, surfaceRadius }) => ({ from, spher
 }
 
 export function create({ aspectRatio, width, height }) {
-  const cameraOrigin = new Vector3(0,10,0);
-  const cameraTarget = new Vector3(0, 0, -30);
-  const focalDistance = cameraTarget.subtract(cameraOrigin).length();
-  const camera: Camera = new Camera({
-    origin: cameraOrigin,
-    aspectRatio,
-    verticalFOV: 30,
-    lookAt: cameraTarget,
-    // up: new Vector3(1, 0, 1),
-    aperture: .2,
-    focalDistance,
-  });
 
   const scene = new Scene();
 
@@ -49,14 +37,13 @@ export function create({ aspectRatio, width, height }) {
   const areaStart = 4;
   const getMaterial = () => {
     const pick = Math.random();
-    if (pick < .5) {
+    if (pick < .75) {
         return new LambertMaterial({ albedo: new Color(Math.random(), Math.random(), Math.random()) });
     }
-    if (pick < .7) {
+    // if (pick < .7) {
         return new MetalMaterial({ albedo: new Color(Math.random(), Math.random(), Math.random()), reflectance: 1, fuzziness: 0 });
-    }
+    // }
     // return new NormalMaterial();
-        return new DialectricMaterial({ albedo: new Color(Math.random(), Math.random(), Math.random()), refractiveIndex: 1.2, reflectance: 1, fuzziness: 0 });
   }
   const positions: { position: Vector3, radius: number }[] = [];
 
@@ -114,6 +101,19 @@ export function create({ aspectRatio, width, height }) {
     });
     scene.addChild(sphere5);
   }
+
+  const cameraOrigin = new Vector3(0,10,0);
+  const cameraTarget = bigSphere2.center;
+  const focalDistance = cameraTarget.subtract(cameraOrigin).length();
+  const camera: Camera = new Camera({
+    origin: cameraOrigin,
+    aspectRatio,
+    verticalFOV: 30,
+    lookAt: cameraTarget,
+    // up: new Vector3(1, 0, 1),
+    aperture: .4,
+    focalDistance,
+  });
 
   return { scene, camera };
 }
