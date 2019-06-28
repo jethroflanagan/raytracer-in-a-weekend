@@ -5,7 +5,8 @@
   "main": "index.html",
   "scripts": {
     "start": "parcel index.html --open",
-    "start-reload": "parcel watch index.html --no-hmr",
+    "start-noreload": "parcel index.html --no-hmr",
+    "start-nohmr": "parcel watch index.html --no-hmr",
     "start-server": "live-server --port=1234 ./dist/ --wait=4000",
     "build": "parcel build index.html"
   },

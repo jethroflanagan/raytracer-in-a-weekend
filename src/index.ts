@@ -11,6 +11,7 @@ import { Vector3 } from './Vector';
 import "./style.css";
 import { FlatMaterial } from './materials/FlatMaterial';
 import { DialectricMaterial } from './materials/DialectricMaterial';
+import { Ray } from './Ray';
 
 // TODO: add to scene and move render code into renderer
 function render(canvas) {
@@ -18,8 +19,22 @@ function render(canvas) {
   const height = canvas.height;
   const aspectRatio = width / height;
 
-  // const image = new Image(width, height);
-  const cameraOrigin = new Vector3(0,10,0);
+
+  // const { scene, camera } = createDemoScene({ aspectRatio, width, height });
+  const { scene, camera } = createTestScene({ aspectRatio, width, height });
+  // const { scene, camera } = createComplexScene({ aspectRatio, width, height });
+  const renderer = new Renderer({ canvas, camera, scene });
+
+  // renderer.render({
+  //   antialias: { numSamples: 5, blurRadius: 2, isUniform: false },
+  //   quality: 10,
+  // });
+  renderer.render({ quality: 1 });
+}
+
+function createDemoScene({ aspectRatio, width, height }) {
+  const scene = new Scene();
+  const cameraOrigin = new Vector3(0,0,0);
   const cameraTarget = new Vector3(0, 0, -30);
   const focalDistance = cameraTarget.subtract(cameraOrigin).length();
   const camera: Camera = new Camera({
@@ -28,22 +43,52 @@ function render(canvas) {
     verticalFOV: 30,
     lookAt: cameraTarget,
     // up: new Vector3(1, 0, 1),
-    aperture: 2,
+    aperture: 0,
     focalDistance,
   });
 
-  const scene = createComplexScene();
-  // const scene = createTestScene();
-  const renderer = new Renderer({ canvas, camera, scene });
-
-  // renderer.render({
-  //   antialias: { numSamples: 10, blurRadius: 1, isUniform: false },
-  //   quality: 10,
+  const background = new FlatBackground();
+  const sphere = new Sphere({
+    center: new Vector3(0, 0, -3),
+    radius: .5,
+    material: new LambertMaterial({ albedo: new Color(1, .5, 0) }),
+  });
+  // const sphere = new Sphere({
+  //   center: new Vector3(0, 0, -3),
+  //   radius: .5,
+  //   material: new NormalMaterial(),
   // });
-  renderer.render({ quality: 1 });
+
+
+  const groundSize = 1000;
+  const ground = new Sphere({
+    center: new Vector3(0, -groundSize - .5, 0),
+    radius: groundSize,
+    material: new LambertMaterial({ albedo: new Color(.1, .8, .3) }),
+  });
+  scene.addChild(ground);
+
+  scene.addBackground(background);
+  scene.addChild(sphere);
+
+  return { scene, camera };
 }
 
-function createTestScene() {
+
+function createTestScene({ aspectRatio, width, height }) {
+  const cameraOrigin = new Vector3(10,10,0);
+  const cameraTarget = new Vector3(0, 0, -30);
+  const focalDistance = cameraTarget.subtract(cameraOrigin).length();
+  const camera: Camera = new Camera({
+    origin: cameraOrigin,
+    aspectRatio,
+    verticalFOV: 30,
+    lookAt: cameraTarget,
+    // up: new Vector3(1, 0, 1),
+    aperture: 1,
+    focalDistance,
+  });
+
   const background = new FlatBackground();
   const sphere = new Sphere({
     center: new Vector3(-3, -.5, -30),
@@ -91,29 +136,52 @@ function createTestScene() {
   scene.addChild(sphere6, { name: '6' });
   scene.addChild(sphere7, { name: '7' });
 
-  return scene;
+  return { scene, camera };
 }
 
-function createComplexScene() {
+function createComplexScene({ aspectRatio, width, height }) {
+  const cameraOrigin = new Vector3(0,10,0);
+  const cameraTarget = new Vector3(0, 0, -30);
+  const focalDistance = cameraTarget.subtract(cameraOrigin).length();
+  const camera: Camera = new Camera({
+    origin: cameraOrigin,
+    aspectRatio,
+    verticalFOV: 30,
+    lookAt: cameraTarget,
+    // up: new Vector3(1, 0, 1),
+    aperture: 0,//.3,
+    focalDistance,
+  });
+
   const scene = new Scene();
 
   const background = new FlatBackground();
   scene.addBackground(background);
 
+  const groundCenter = new Vector3(0, -1000, 0);
+  const groundSize = 1000;
   const ground = new Sphere({
     center: new Vector3(0, -1000, 0),
-    radius: 1000,
+    radius: groundSize,
     material: new LambertMaterial({ albedo: new Color(.1, .8, .3) }),
   });
   scene.addChild(ground);
 
   const scale = 3;
-  for (let x = -5; x < 5; x++) {
-    for (let y = -5; y < 5; y++) {
+  const shift = 3;
+  for (let x = -7; x < 7; x++) {
+    for (let y = -7; y < 7; y++) {
+  // const scene = createComplexScene();
+      let center = new Vector3(Math.random() * shift-shift/2 + x* scale, .1, Math.random() * shift-shift / 2 - y* scale-35);
+      const size = .7;
+      const diff = center.subtract(groundCenter).length() - groundSize  - size;
+      let { direction } = new Ray(center, groundCenter);
+      direction = direction.unit().multiply(diff);
+      center = center.add(direction);
       const sphere5 = new Sphere({
-        center: new Vector3(Math.random() * 5-2 + x* scale, .3, Math.random() * 5-2 - y* scale-35),
-        radius: .3,
-        material: new LambertMaterial({ albedo: new Color(Math.random(), Math.random(), Math.random()) }),
+        center: center,
+        radius: size,
+        material: new MetalMaterial({ albedo: new Color(Math.random(), Math.random(), Math.random()), reflectance: 1, fuzziness: 0 }),//new LambertMaterial({ albedo: new Color(Math.random(), Math.random(), Math.random()) }),
       });
       scene.addChild(sphere5);
     }
@@ -126,9 +194,9 @@ function createComplexScene() {
   });
   scene.addChild(sphere);
   const sphere2 = new Sphere({
-    center: new Vector3(2, 3, -25),
+    center: new Vector3(2, 3, -22),
     radius: 3,
-    material: new DialectricMaterial({ albedo: new Color(1,1,1), reflectance: 1, fuzziness: 0, refractiveIndex: 1.5 }),
+    material: new MetalMaterial({ albedo: new Color(1,.9,1), reflectance: 1, fuzziness: 0 }),
   });
   scene.addChild(sphere2);
   const sphere3 = new Sphere({
@@ -138,7 +206,7 @@ function createComplexScene() {
   });
   scene.addChild(sphere3);
 
-  return scene;
+  return { scene, camera };
 }
 
 (function run() {
