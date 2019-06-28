@@ -21,15 +21,15 @@ function render(canvas) {
 
 
   // const { scene, camera } = createDemoScene({ aspectRatio, width, height });
-  const { scene, camera } = createTestScene({ aspectRatio, width, height });
-  // const { scene, camera } = createComplexScene({ aspectRatio, width, height });
+  // const { scene, camera } = createTestScene({ aspectRatio, width, height });
+  const { scene, camera } = createComplexScene({ aspectRatio, width, height });
   const renderer = new Renderer({ canvas, camera, scene });
 
-  // renderer.render({
-  //   antialias: { numSamples: 5, blurRadius: 2, isUniform: false },
-  //   quality: 10,
-  // });
-  renderer.render({ quality: 1 });
+  renderer.render({
+    antialias: { numSamples: 5, blurRadius: .5, isUniform: true },
+    quality: 20,
+  });
+  // renderer.render({ quality: 1 });
 }
 
 function createDemoScene({ aspectRatio, width, height }) {
@@ -85,7 +85,7 @@ function createTestScene({ aspectRatio, width, height }) {
     verticalFOV: 30,
     lookAt: cameraTarget,
     // up: new Vector3(1, 0, 1),
-    aperture: 1,
+    aperture: 0,//1,
     focalDistance,
   });
 
@@ -121,7 +121,7 @@ function createTestScene({ aspectRatio, width, height }) {
     material: new LambertMaterial({ albedo: new Color(.1, .34, .94) }),
   });
   const sphere6 = new Sphere({
-    center: new Vector3(-10.5, 2, -40), 
+    center: new Vector3(-10.5, 2, -40),
     radius: 2.5, 
     material: new FlatMaterial({ albedo: new Color(.8, .34, .94)),
   });
@@ -149,7 +149,7 @@ function createComplexScene({ aspectRatio, width, height }) {
     verticalFOV: 30,
     lookAt: cameraTarget,
     // up: new Vector3(1, 0, 1),
-    aperture: 0,//.3,
+    aperture: .2,
     focalDistance,
   });
 
@@ -167,24 +167,50 @@ function createComplexScene({ aspectRatio, width, height }) {
   });
   scene.addChild(ground);
 
-  const scale = 3;
-  const shift = 3;
-  for (let x = -7; x < 7; x++) {
-    for (let y = -7; y < 7; y++) {
-  // const scene = createComplexScene();
-      let center = new Vector3(Math.random() * shift-shift/2 + x* scale, .1, Math.random() * shift-shift / 2 - y* scale-35);
-      const size = .7;
-      const diff = center.subtract(groundCenter).length() - groundSize  - size;
-      let { direction } = new Ray(center, groundCenter);
-      direction = direction.unit().multiply(diff);
-      center = center.add(direction);
-      const sphere5 = new Sphere({
-        center: center,
-        radius: size,
-        material: new MetalMaterial({ albedo: new Color(Math.random(), Math.random(), Math.random()), reflectance: 1, fuzziness: 0 }),//new LambertMaterial({ albedo: new Color(Math.random(), Math.random(), Math.random()) }),
-      });
-      scene.addChild(sphere5);
+  const positionScale = 1;
+  const area = 14;
+  const areaStart = 4;
+  const getMaterial = () => {
+    const pick = Math.random();
+    if (pick < .8) {
+        return new LambertMaterial({ albedo: new Color(Math.random(), Math.random(), Math.random()) });
     }
+    if (pick < .95) {
+        return new MetalMaterial({ albedo: new Color(Math.random(), Math.random(), Math.random()), reflectance: 1, fuzziness: 0 });
+    }
+    return new NormalMaterial();
+        // return new LambertMaterial({ albedo: new Color(Math.random(), Math.random(), Math.random()) });
+  }
+  const positions = [];
+  const genPoint = ({ size }) => {
+    const angle = Math.random() * Math.PI * 2;
+    // const distance = areaStart + size + Math.random() * area;
+    const distance = area * Math.sqrt(Math.random()) + areaStart + size;
+    const x = Math.cos(angle) * distance;
+    const z = Math.sin(angle) * distance;
+    return {x, z}
+  }
+  for (let i = 0; i < 70; i++) {
+    const size = .5 + Math.random() * 1;
+    // const angle = Math.random() * Math.PI * 2;
+    // // const distance = areaStart + size + Math.random() * area;
+    // const distance = area * Math.sqrt(Math.random()) + areaStart;
+    // const x = Math.cos(angle) * distance;
+    // const z = Math.sin(angle) * distance;
+    const { x , z } = genPoint({ size })
+    // positions.push(
+// const scene = createComplexScene();
+    let center = new Vector3(x * positionScale, .1, z * positionScale - 28);
+    const diff = center.subtract(groundCenter).length() - groundSize  - size;
+    let { direction } = new Ray(center, groundCenter);
+    direction = direction.unit().multiply(diff);
+    center = center.add(direction);
+    const sphere5 = new Sphere({
+      center: center,
+      radius: size,
+      material: getMaterial(),//new MetalMaterial({ albedo: new Color(Math.random(), Math.random(), Math.random()), reflectance: 1, fuzziness: 0 }),//new LambertMaterial({ albedo: new Color(Math.random(), Math.random(), Math.random()) }),
+    });
+    scene.addChild(sphere5);
   }
 
   const sphere = new Sphere({
