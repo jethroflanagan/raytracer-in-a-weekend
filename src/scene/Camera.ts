@@ -1,6 +1,6 @@
-import { Vector3 } from "./Vector";
-import { Ray } from "./Ray";
-import { toRadians } from "./utils";
+import { Vector3 } from "src/Vector";
+import { Ray } from "src/Ray";
+import { toRadians } from "src/utils/math";
 
 export type RenderTarget = {
   width: number,

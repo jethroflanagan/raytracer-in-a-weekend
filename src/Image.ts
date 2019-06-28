@@ -1,4 +1,4 @@
-import { Color } from './Color';
+import { Color } from 'src/Color';
 
 export class Image {
   private pixels: Color[][] = null;

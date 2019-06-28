@@ -1,7 +1,7 @@
-import { Volume } from "./Volume";
-import { Ray } from "./Ray";
-import { Intersection } from "./Intersection";
-import { FlatBackground } from "./FlatBackground";
+import { Volume } from "src/volume/Volume";
+import { Ray } from "src/Ray";
+import { Intersection } from "src/Intersection";
+import { FlatBackground } from "src/scene/FlatBackground";
 
 export class Scene {
   children: Volume[] = [];

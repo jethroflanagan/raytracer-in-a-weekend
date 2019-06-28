@@ -1,11 +1,11 @@
-import { Camera } from './Camera';
-import { Color } from './Color';
-import { Image } from './Image';
-import { Intersection } from './Intersection';
-import { Ray } from './Ray';
-import { Scene } from './Scene';
-import { Vector3 } from './Vector';
-import { Volume } from './Volume';
+import { Camera } from 'src/scene/Camera';
+import { Color } from 'src/Color';
+import { Image } from 'src/Image';
+import { Intersection } from 'src/Intersection';
+import { Ray } from 'src/Ray';
+import { Scene } from 'src/scene/Scene';
+import { Vector3 } from 'src/Vector';
+import { Volume } from 'src/volume/Volume';
 
 const T_MIN = .001;
 const T_MAX = Infinity;

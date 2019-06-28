@@ -6,6 +6,7 @@
     "sourceMap": true,
     "allowJs": true,
     "target": "es5",
+    "baseUrl": "./",
     "lib": [
       "es6",
       "dom"
