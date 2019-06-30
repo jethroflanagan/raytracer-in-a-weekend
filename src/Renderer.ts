@@ -10,6 +10,7 @@ import { Volume } from 'src/volume/Volume';
 const T_MIN = .001;
 const T_MAX = Infinity;
 const MAX_RAY_DEPTH = 100;
+const noop = function () {};
 
 export type AntialiasOptions = {
   numSamples: number,
@@ -35,6 +36,8 @@ export class Renderer {
   private height: number = 0;
   private camera: Camera;
   private scene: Scene;
+  private onProgress: Function;
+  private onStart: Function;
 
   constructor({ canvas, camera, scene }: { canvas: any, camera: Camera, scene: Scene }) {
     this.canvas = canvas;
@@ -44,6 +47,12 @@ export class Renderer {
     this.camera = camera;
     this.scene = scene;
     this.renderBuffer = this.ctx.createImageData(this.width, this.height);
+    this.setOnRenderUpdate();
+  }
+
+  setOnRenderUpdate({ onProgress = noop, onStart = noop }: { onProgress?: Function, onStart?: Function } = {}) {
+    this.onProgress = onProgress;
+    this.onStart = onStart;
   }
 
   setPixel = ({ x, y, width, color, renderBuffer }: { x: number, y: number, width?: number, color: Color, renderBuffer?: ImageData }) => {
@@ -147,6 +156,7 @@ export class Renderer {
   // TODO: make timeIncrement correctly divide into shutterOpenTime (misses last render)
   render = async ({ antialias = null, quality = 1, blockSize = 50, resolution = 1, time = 0, timeIncrement = 100 }: RenderOptions = <RenderOptions>{}) => {
     const renderStart = performance.now();
+    this.onStart();
     const { ctx, canvas, width, height } = this;
 
     if (resolution !== 1) {
@@ -168,7 +178,7 @@ export class Renderer {
     };
     position.sort((a,b) => a.distance - b.distance);
 
-    console.log(time, this.scene.camera.shutterOpenTime, timeIncrement);
+    // console.log(time, this.scene.camera.shutterOpenTime, timeIncrement);
 
     // render for time
     // TODO: (OPTIMIZATION) only re-render buffers that contain an object being animated
@@ -176,7 +186,9 @@ export class Renderer {
     let blendIndex = 0;
 
     // Need to run loops in this order so easing (scene.updateTime) only occurs once instead of repeating the ease calcs per renderBlock
-    for (let currentTime = time; currentTime < time + this.scene.camera.shutterOpenTime; currentTime += timeIncrement) {
+    const startTime = time;
+    const endTime = startTime + this.scene.camera.shutterOpenTime;
+    for (let currentTime = startTime; currentTime <= endTime; currentTime += timeIncrement) {
       const sceneTime = currentTime;
       this.scene.updateTime(sceneTime);
       const activeBlendList = blendingBlocks[blendIndex];
@@ -192,7 +204,16 @@ export class Renderer {
 
         const blendedBuffer = this.blendBuffers(activeBlend);
         ctx.putImageData(blendedBuffer, block.x, block.y);
+
+        // console.log('render progress: ' + (performance.now() - renderStart));
+        // console.table([
+        //   ['blocks', i / position.length ],
+        //   ['motion blur', (currentTime - startTime) / (endTime - startTime) ],
+        // ]);
+        this.onProgress('block', i / position.length);
       }
+      this.onProgress('block', 1);
+      this.onProgress('all', (currentTime - startTime) / (endTime - startTime));
     }
 
     console.log('render time: ' + (performance.now() - renderStart));

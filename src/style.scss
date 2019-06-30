@@ -1,0 +1,45 @@
+html, body {
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+.container {
+  position: relative;
+  margin: 5px;
+}
+.render {
+  transform-origin: top left;
+  border: 1px solid #000;
+}
+
+.ui {
+  margin: 5px;
+}
+.progress {
+  font-family: monospace;
+  margin-bottom: 10px;
+  &-label {
+    margin-bottom: 5px;
+  }
+  &-bar {
+    height: 5px;
+    width: 100%;
+    background: #f0f0f0;
+    border: 1px solid #ccc;
+
+    .bar {
+      background: #00dcff;
+      width: 0;
+      height: 100%;
+    }
+  }
+}
+
+.render-block-visual {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 50px;
+  height: 50px;
+  border: 1px solid #fff;
+  background: rgba(0,0,0,.1);
+}
