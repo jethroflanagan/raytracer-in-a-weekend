@@ -10,7 +10,7 @@ export class MetalMaterial implements Material {
   reflectance: number;
   fuzziness: number;
 
-  constructor({ albedo, reflectance = 1, fuzziness = 0 } : { albedo: Color, reflectance: number, fuzziness: number }) {
+  constructor({ albedo, reflectance = 1, fuzziness = 0 } : { albedo: Color, reflectance?: number, fuzziness?: number }) {
     this.albedo = albedo;
     this.reflectance = reflectance;
     this.fuzziness = fuzziness;

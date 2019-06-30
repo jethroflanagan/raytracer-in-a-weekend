@@ -22,6 +22,8 @@ export type RenderOptions = {
   quality?: number,
   blockSize?: number,
   resolution?: number, // 0.1 -> 5+ (width,height multiplier)
+  time?: number,
+  timeIncrement?: number, // time increments for camera shutter open time
 };
 
 // RHS camera (y up, x right, negative z into screen)
@@ -113,7 +115,7 @@ export class Renderer {
     return background.getColor(ray);
   }
 
-  antialiasForXY(x: number, y: number, { numSamples = 10, blurRadius = 1, isUniform = false }: AntialiasOptions = <AntialiasOptions>{}): Color {
+  antialiasForXY(x: number, y: number, time: number, { numSamples = 10, blurRadius = 1, isUniform = false }: AntialiasOptions = <AntialiasOptions>{}): Color {
     let colorV: Vector3 = new Vector3(0, 0, 0);
 
     for (let s = 0; s < numSamples; s++) {
@@ -121,7 +123,8 @@ export class Renderer {
       const sampleAngle = angleVal * Math.PI * 2;
       const resultV: Color = this.getColorForXY(
         (x + Math.cos(sampleAngle) * blurRadius),
-        (y + Math.sin(sampleAngle) * blurRadius)
+        (y + Math.sin(sampleAngle) * blurRadius),
+        time,
       );
       colorV = new Vector3(resultV.r, resultV.g, resultV.b).add(colorV);
     }
@@ -133,15 +136,16 @@ export class Renderer {
     return new Vector3(Math.sqrt(color.r), Math.sqrt(color.g), Math.sqrt(color.b)).toColor();
   }
 
-  getColorForXY(x, y): Color {
+  getColorForXY(x: number, y: number, time: number): Color {
     const { width, height, camera } = this;
     const u = x / width;
     const v = y / height;
-    const ray = camera.getRay(u, v);
+    const ray = camera.getRay(u, v, time);
     return this.getColorForRay(ray);
   }
 
-  render = async ({ antialias = null, quality = 1, blockSize = 50, resolution = 1 }: RenderOptions = <RenderOptions>{}) => {
+  // TODO: make timeIncrement correctly divide into shutterOpenTime (misses last render)
+  render = async ({ antialias = null, quality = 1, blockSize = 50, resolution = 1, time = 0, timeIncrement = 100 }: RenderOptions = <RenderOptions>{}) => {
     const renderStart = performance.now();
     const { ctx, canvas, width, height } = this;
 
@@ -163,22 +167,56 @@ export class Renderer {
       }
     };
     position.sort((a,b) => a.distance - b.distance);
-    
-    for (let i: number = 0; i < position.length; i++) {
-      const { x, y } = position[i];
-      await  this.renderBlock({ x, y, width: blockSize, height: blockSize }, { antialias, quality, resolution });
+
+    console.log(time, this.scene.camera.shutterOpenTime, timeIncrement);
+
+    // render for time
+    // TODO: (OPTIMIZATION) only re-render buffers that contain an object being animated
+    const blendingBlocks = new Array(position.length).fill([], 0, position.length); // used to blend blocks together
+    let blendIndex = 0;
+
+    // Need to run loops in this order so easing (scene.updateTime) only occurs once instead of repeating the ease calcs per renderBlock
+    for (let currentTime = time; currentTime < time + this.scene.camera.shutterOpenTime; currentTime += timeIncrement) {
+      const sceneTime = currentTime;
+      this.scene.updateTime(sceneTime);
+      const activeBlendList = blendingBlocks[blendIndex];
+      for (let i: number = 0; i < position.length; i++) {
+        const { x, y } = position[i];
+        const block = await this.renderBlock({ x, y, width: blockSize, height: blockSize }, { antialias, quality, resolution, time: sceneTime });
+
+        if (activeBlendList[i] == null) {
+          activeBlendList[i] = [];
+        }
+        const activeBlend = activeBlendList[i];
+        activeBlend.push(block.renderBuffer);
+
+        const blendedBuffer = this.blendBuffers(activeBlend);
+        ctx.putImageData(blendedBuffer, block.x, block.y);
+      }
     }
 
-
-    // ctx.drawImage( resolutionCanvas, 0, 0, width, height );
-
-    // else {
-    //   ctx.drawImage( canvas, 0, 0, Math.round(width / resolution), Math.round(height / resolution) );
-    // }
     console.log('render time: ' + (performance.now() - renderStart));
   }
 
-  renderBlock(area: { x, y, width, height }, { antialias, quality, resolution }) {
+  /**
+   * Blends together multiple buffers so motion blur can be performed
+   * @param buffers
+   */
+  blendBuffers(buffers: ImageData[]) {
+    const blended = [];
+    for (const buffer of buffers) {
+      for (let index = 0; index < buffer.data.length; index++) {
+        if (blended[index] == null) {
+          blended[index] = 0;
+        }
+        blended[index] += buffer.data[index];
+      }
+    }
+    const data: Uint8ClampedArray = new Uint8ClampedArray(blended.map(v => v / buffers.length));
+    return new ImageData(data, buffers[0].width, buffers[0].height);
+  }
+
+  renderBlock(area: { x, y, width, height }, { antialias, quality, resolution, time }): Promise<{ renderBuffer: ImageData, x: number, y: number }> {
     // const renderStart = performance.now();
     const { ctx, width, height } = this;
     const blockX = area.x * resolution;
@@ -186,7 +224,11 @@ export class Renderer {
     const blockWidth = area.width * resolution;
     const blockHeight = area.height * resolution;
     const renderBuffer = this.ctx.createImageData(blockWidth, blockHeight);
-    const renderXY = antialias ? (x, y) => this.antialiasForXY(x, y, { ...antialias }) : (x, y) => this.getColorForXY(x, y);
+
+    const renderXY = antialias
+      ? (x, y) => this.antialiasForXY(x, y, time, { ...antialias })
+      : (x, y) => this.getColorForXY(x, y, time);
+
     for (let y: number = blockY; y < blockY + blockHeight; y++) {
       for (let x: number = blockX; x < blockX + blockHeight; x++) {
 
@@ -205,15 +247,17 @@ export class Renderer {
       }
     }
 
-    const p = new Promise(resolve => {
+    const p: Promise<any> = new Promise(resolve => {
       // needs to be setTimeout to prevent the putImageData from locking up the processor
       setTimeout(() => {
-        ctx.putImageData(renderBuffer, area.x * resolution, (height - area.y - area.height)  * resolution);
-        resolve();
+        // ctx.putImageData(renderBuffer, area.x * resolution, (height - area.y - area.height)  * resolution);
+        resolve({
+          renderBuffer,
+          x: area.x * resolution,
+          y: (height - area.y - area.height)  * resolution
+        });
       }, 1);
     });
     return p;
-    // console.log('block time: ' + (performance.now() - renderStart));
-    // return renderBuffer;
   }
 }

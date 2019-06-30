@@ -1,6 +1,6 @@
-import { Vector3 } from "src/Vector";
 import { Ray } from "src/Ray";
 import { toRadians } from "src/utils/math";
+import { Vector3 } from "src/Vector";
 
 export type RenderTarget = {
   width: number,
@@ -18,6 +18,7 @@ export class Camera {
   lookAt: Vector3;
   up: Vector3;
   focalDistance: number;
+  shutterOpenTime: number;
   private lensRadius: number;
 
   // orientation
@@ -38,14 +39,16 @@ export class Camera {
     up = new Vector3(0, 1, 0),
     aperture = 0,
     focalDistance = 1,
+    shutterOpenTime = 0, // for motion blur
   }: {
     origin: Vector3,
     verticalFOV: number,
     aspectRatio: number,
     lookAt: Vector3,
     up?: Vector3,
-    aperture: number,
-    focalDistance: number;
+    aperture?: number,
+    focalDistance?: number;
+    shutterOpenTime?: number;
   }) {
 
     this.origin = origin;
@@ -54,6 +57,7 @@ export class Camera {
     this.up = up;
     this.verticalFOV = verticalFOV;
     this.aspectRatio = aspectRatio;
+    this.shutterOpenTime = shutterOpenTime;
 
     const theta = toRadians(verticalFOV);
     const halfHeight = Math.tan(theta / 2);
@@ -66,8 +70,6 @@ export class Camera {
     this.u = u;
     this.v = v;
 
-    // const DEPTH = -1;
-    // this.lowerLeftCorner = new Vector3(-halfWidth, -halfHeight, DEPTH);
     this.lowerLeftCorner = origin
       .subtract( u.multiply(halfWidth * focalDistance) )
       .subtract( v.multiply(halfHeight * focalDistance) )
@@ -88,20 +90,23 @@ export class Camera {
     return this.lensRadius * 2;
   }
 
-  getRay(horizontalPercent: number, verticalPercent: number): Ray {
+  getRay(horizontalPercent: number, verticalPercent: number, time: number = 0): Ray {
     const { u, v } = this;
     let offset = new Vector3(0,0,0);
+
     if (this.lensRadius > 0) {
       const pointOnLens = this.getRandomPointOnDisc().multiply(this.lensRadius);
       offset = u.multiply(pointOnLens.x)
         .add( v.multiply(pointOnLens.y) );
     }
+
     return new Ray(this.origin.add(offset),
       this.lowerLeftCorner
       .add( this.horizontal.multiply(horizontalPercent) )
       .add( this.vertical.multiply(verticalPercent) )
       .subtract( this.origin )
-      .subtract( offset )
+      .subtract( offset ),
+      { time }
     );
   }
 }

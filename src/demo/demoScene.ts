@@ -1,3 +1,4 @@
+import { Animator } from './../animation/Animator';
 import { Color } from 'src/Color';
 import { LambertMaterial } from 'src/material/LambertMaterial';
 import { Camera } from 'src/scene/Camera';
@@ -19,6 +20,7 @@ export function create({ aspectRatio, width, height }) {
     // up: new Vector3(1, 0, 1),
     aperture: 0,
     focalDistance,
+    shutterOpenTime: 200,
   });
 
   const background = new FlatBackground();
@@ -42,8 +44,27 @@ export function create({ aspectRatio, width, height }) {
   });
   scene.addChild(ground);
 
+  scene.setActiveCamera(camera);
   scene.addBackground(background);
   scene.addChild(sphere);
 
+  const animator = scene.addAnimator(new Animator());
+  animator.animate({
+    item: sphere,
+    from: {
+      y: 0,
+    },
+    to: {
+      y: .5,
+    },
+    startTime: 0,
+    endTime: 1000,
+    update: ({ item, properties }) => {
+      console.log('update', properties);
+      item.center.y = properties.y;
+    },
+  });
+
+  console.log(animator.getAnimationTimeRange())
   return { scene, camera };
 }
