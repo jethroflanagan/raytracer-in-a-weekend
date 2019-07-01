@@ -37,3 +37,7 @@ export function placeSphereOnSurfaceFromPosition({ from, surfaceCenter, surfaceR
 export function getDistance(x1, y1, x2, y2) {
   return Math.sqrt( (x1 - x2) ** 2 + (y1 - y2) ** 2 );
 }
+
+export const clamp = (min, max, value) => {
+  return Math.max(min, Math.min(max, value));
+}

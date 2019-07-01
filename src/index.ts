@@ -11,9 +11,9 @@ function render({ canvas, ui, renderBlock }) {
   const height = canvas.height;
   const aspectRatio = width / height;
 
-  // const { scene, camera } = createDemoScene({ aspectRatio, width, height });
+  const { scene, camera } = createDemoScene({ aspectRatio, width, height });
   // const { scene, camera } = createTestScene({ aspectRatio, width, height });
-  const { scene, camera } = createBookCoverScene({ aspectRatio, width, height });
+  // const { scene, camera } = createBookCoverScene({ aspectRatio, width, height });
   const renderer = new Renderer({ canvas, camera, scene });
 
   const renderProgress = new RenderProgress({ element: ui, block: renderBlock });

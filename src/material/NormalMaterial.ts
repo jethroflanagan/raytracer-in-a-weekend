@@ -5,8 +5,10 @@ import { Intersection } from 'src/Intersection';
 import { Material } from './Material';
 
 export class NormalMaterial implements Material {
+  allowShadows: boolean;
 
-  constructor() {
+  constructor({ allowShadows = false }: { allowShadows?: boolean } = {}) {
+    this.allowShadows = allowShadows;
   }
 
   bounce({ ray, intersection }: { ray: Ray, intersection: Intersection }): { bounceRay: Ray, attenuation: Color } {
@@ -16,8 +18,10 @@ export class NormalMaterial implements Material {
     let bounceRay = null;
 
     // adds self-shadow
-    const target = intersection.point.add(intersection.normal).add(Vector3.randomDirection());
+    if (this.allowShadows) {
+      const target = intersection.point.add(intersection.normal).add(Vector3.randomDirection());
       bounceRay = new Ray(intersection.point, target);
+    }
 
     return {
       attenuation,
