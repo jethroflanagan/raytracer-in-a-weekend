@@ -135,7 +135,7 @@ export function create({ aspectRatio, width, height }) {
       originZ: 0,
     },
     ease: lerp,
-    startTime: 0,
+    startTime: 100,
     endTime: 1000,
     update: ({ item, properties }) => {
       // item.verticalFOV = properties.verticalFOV;

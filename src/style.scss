@@ -44,3 +44,13 @@ html, body {
   border: 1px solid #fff;
   background: rgba(0,0,0,.1);
 }
+
+.frames {
+  position: absolute;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  transform-origin: top right;
+  transform: scale(0.2);
+  top: 80px;
+}

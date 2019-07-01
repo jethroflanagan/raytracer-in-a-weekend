@@ -15,6 +15,7 @@ function render({ canvas, ui, renderBlock }) {
   // const { scene, camera } = createTestScene({ aspectRatio, width, height });
   const { scene, camera } = createBookCoverScene({ aspectRatio, width, height });
   const renderer = new Renderer({ canvas, camera, scene });
+
   const renderProgress = new RenderProgress({ element: ui, block: renderBlock });
   renderer.setOnRenderUpdate({
     onProgress: (type, percent) => renderProgress.update(type, percent),
@@ -23,13 +24,41 @@ function render({ canvas, ui, renderBlock }) {
     onComplete: () => renderProgress.complete(),
   });
 
+  // const renderProperties = { antialias: { numSamples: 5, blurRadius: .5, isUniform: false }, quality: 1, resolution: 1 }
+  const renderProperties = { quality: 5, resolution: 1 }
+
+  renderSingle({ canvas,  renderer, renderProperties });
+  // renderSequence({ canvas, renderer, renderProperties });
+}
+
+function renderSingle({ canvas, renderer, renderProperties }) {
+    // const renderProgress = new RenderProgress({ element: ui, block: renderBlock });
+
+
   // renderer.render({
   //   antialias: { numSamples: 5, blurRadius: .5, isUniform: false },
-  //   quality: 5,
+  //   quality: 3,
   //   resolution: 1,
-  //   time: 200, timeIncrement: 20,
+  //   time: 500, timeIncrement: 20,
   // });
-  renderer.render({ quality: 1, resolution: .5, time: 500, timeIncrement: 50 });
+
+  renderer.render({ ...renderProperties, time: 500, timeIncrement: 50 });
+}
+
+async function renderSequence({ canvas, renderer, renderProperties }) {
+  const numFrames = 24;
+  const fps = 24;
+  const frameTime = 1000 / fps;
+  for (let frame = 0; frame < numFrames; frame++) {
+    await renderer.render({ ...renderProperties, time: 0 + frame * frameTime, timeIncrement: frameTime });
+
+    const frameCanvas = document.createElement('canvas');
+    const el = document.getElementById('frames');
+    el.appendChild(frameCanvas);
+    frameCanvas.setAttribute('width', canvas.width);
+    frameCanvas.setAttribute('height', canvas.height);
+    frameCanvas.getContext('2d').drawImage(canvas, 0, 0);
+  }
 }
 
 (function run() {

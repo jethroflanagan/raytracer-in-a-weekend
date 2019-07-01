@@ -209,7 +209,7 @@ export class Renderer {
         activeBlend.push(block.renderBuffer);
 
         const blendedBuffer = this.blendBuffers(activeBlend);
-        
+
         // unscaled
         this.onBlockStart(block.x, block.y, blockSize, blockSize);
 
@@ -225,9 +225,12 @@ export class Renderer {
       this.onProgress('block', 1);
       this.onProgress('all', (currentTime - startTime) / (endTime - startTime));
     }
-    this.onComplete();
 
+    this.onComplete();
     console.log('render time: ' + (performance.now() - renderStart));
+
+    // allow async/await for renderer
+    return new Promise(resolve => setTimeout(resolve));
   }
 
   /**
