@@ -34,6 +34,7 @@ export class Scene {
   }
 
   updateTime(time: number) {
+    if (!this.animator) return;
     this._time = time;
     this.animator.updateItemsForTime(time);
   }

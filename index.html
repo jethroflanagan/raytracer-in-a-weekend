@@ -6,8 +6,23 @@
 </head>
 
 <body>
+  <div id="ui" class="ui">
+    <div class="progress progress--all">
+      <div class="progress-label">All <span class="progress-time"></span></div>
+      <div class="progress-bar">
+          <div class="bar"></div>
+      </div>
+    </div>
+    <div class="progress progress--block">
+      <div class="progress-label">Block</div>
+      <div class="progress-bar">
+        <div class="bar"></div>
+      </div>
+    </div>
+  </div>
   <div class="container">
     <canvas width="800" height="400" id="render" class="render"></canvas>
+    <div class="render-block-visual" id="render-block"></div>
   </div>
 	<script src="src/index.ts">
 	</script>
