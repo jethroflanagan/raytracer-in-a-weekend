@@ -114,7 +114,7 @@ export function create({ aspectRatio, width, height }) {
     // up: new Vector3(1, 0, 1),
     aperture: .4,
     focalDistance,
-    shutterOpenTime: 200,
+    shutterOpenTime: 150,
   });
   scene.setActiveCamera(camera);
 
@@ -124,15 +124,22 @@ export function create({ aspectRatio, width, height }) {
     item: camera,
     from: {
       verticalFOV: 40,
+      originX: 0,
+      originY: 10,
+      originZ: 0,
     },
     to: {
       verticalFOV: 30,
+      originX: 14,
+      originY: 12,
+      originZ: 0,
     },
     ease: lerp,
     startTime: 0,
     endTime: 1000,
     update: ({ item, properties }) => {
-      item.verticalFOV = properties.verticalFOV;
+      // item.verticalFOV = properties.verticalFOV;
+      item.origin.x = properties.originX;
     },
   });
   scene.addAnimator(animator);

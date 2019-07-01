@@ -209,6 +209,10 @@ export class Renderer {
         activeBlend.push(block.renderBuffer);
 
         const blendedBuffer = this.blendBuffers(activeBlend);
+        
+        // unscaled
+        this.onBlockStart(block.x, block.y, blockSize, blockSize);
+
         ctx.putImageData(blendedBuffer, block.x, block.y);
 
         // console.log('render progress: ' + (performance.now() - renderStart));
@@ -252,9 +256,6 @@ export class Renderer {
     const blockWidth = area.width * resolution;
     const blockHeight = area.height * resolution;
     const renderBuffer = this.ctx.createImageData(blockWidth, blockHeight);
-
-    // un-scaled
-    this.onBlockStart(area.x, area.y, area.width, area.height);
 
     const renderXY = antialias
       ? (x, y) => this.antialiasForXY(x, y, time, { ...antialias })

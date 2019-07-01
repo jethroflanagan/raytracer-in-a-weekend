@@ -20,7 +20,7 @@ function render({ canvas, ui, renderBlock }) {
     onProgress: (type, percent) => renderProgress.update(type, percent),
     onBlockStart: (x, y, width, height) => renderProgress.updateBlockPreview(x, y, width, height),
     onStart: () => renderProgress.start(),
-    onComplete: () => renderProgress.complete();
+    onComplete: () => renderProgress.complete(),
   });
 
   // renderer.render({

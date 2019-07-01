@@ -36,7 +36,7 @@ export class RenderProgress {
   }
 
   updateBlockPreview(x, y, width, height) {
-    this.block.setAttribute('style', `left: ${x}px; top: ${y}px; width: ${width}px; height: ${height}px`);
+    this.block.setAttribute('style', `left: ${x}px; top: ${y}px; width: ${width}px; height: ${height}px; display: block;`);
   }
 
   complete() {
