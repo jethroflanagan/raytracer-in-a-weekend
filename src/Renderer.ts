@@ -38,6 +38,8 @@ export class Renderer {
   private scene: Scene;
   private onProgress: Function;
   private onStart: Function;
+  private onBlockStart: Function;
+  private onComplete: Function;
 
   constructor({ canvas, camera, scene }: { canvas: any, camera: Camera, scene: Scene }) {
     this.canvas = canvas;
@@ -50,9 +52,13 @@ export class Renderer {
     this.setOnRenderUpdate();
   }
 
-  setOnRenderUpdate({ onProgress = noop, onStart = noop }: { onProgress?: Function, onStart?: Function } = {}) {
+  setOnRenderUpdate({ onProgress = noop, onStart = noop, onBlockStart = noop, onComplete = noop }:
+    { onProgress?: Function, onStart?: Function, onBlockStart?: Function, onComplete?: Function } = {}
+  ) {
     this.onProgress = onProgress;
     this.onStart = onStart;
+    this.onBlockStart = onBlockStart;
+    this.onComplete = onComplete;
   }
 
   setPixel = ({ x, y, width, color, renderBuffer }: { x: number, y: number, width?: number, color: Color, renderBuffer?: ImageData }) => {
@@ -215,6 +221,7 @@ export class Renderer {
       this.onProgress('block', 1);
       this.onProgress('all', (currentTime - startTime) / (endTime - startTime));
     }
+    this.onComplete();
 
     console.log('render time: ' + (performance.now() - renderStart));
   }
@@ -245,6 +252,9 @@ export class Renderer {
     const blockWidth = area.width * resolution;
     const blockHeight = area.height * resolution;
     const renderBuffer = this.ctx.createImageData(blockWidth, blockHeight);
+
+    // un-scaled
+    this.onBlockStart(area.x, area.y, area.width, area.height);
 
     const renderXY = antialias
       ? (x, y) => this.antialiasForXY(x, y, time, { ...antialias })

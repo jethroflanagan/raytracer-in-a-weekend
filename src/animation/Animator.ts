@@ -1,7 +1,7 @@
 import { lerp } from 'src/utils/math';
 
 type Animation = {
-  item: unknown;
+  item?: unknown; // not really needed, more as a reference, can be used as an ID
   from: unknown;
   to: unknown;
   ease?: Function;

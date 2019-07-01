@@ -6,9 +6,10 @@ import { NormalMaterial } from 'src/material/NormalMaterial';
 import { Camera } from 'src/scene/Camera';
 import { FlatBackground } from 'src/scene/FlatBackground';
 import { Scene } from 'src/scene/Scene';
-import { getRandomPointInCircle, placeSphereOnSurfaceFromPosition } from 'src/utils/math';
+import { getRandomPointInCircle, placeSphereOnSurfaceFromPosition, lerp } from 'src/utils/math';
 import { Vector3 } from 'src/Vector';
 import { Sphere } from 'src/volume/Sphere';
+import { Animator } from 'src/animation/Animator';
 
 const setupPlaceOnSurface = ({ surfaceCenter, surfaceRadius }) => ({ from, sphereRadius }) => {
   return placeSphereOnSurfaceFromPosition({ from, surfaceCenter, sphereRadius, surfaceRadius });
@@ -113,7 +114,28 @@ export function create({ aspectRatio, width, height }) {
     // up: new Vector3(1, 0, 1),
     aperture: .4,
     focalDistance,
+    shutterOpenTime: 200,
   });
+  scene.setActiveCamera(camera);
+
+
+  const animator: Animator = new Animator();
+  animator.animate({
+    item: camera,
+    from: {
+      verticalFOV: 40,
+    },
+    to: {
+      verticalFOV: 30,
+    },
+    ease: lerp,
+    startTime: 0,
+    endTime: 1000,
+    update: ({ item, properties }) => {
+      item.verticalFOV = properties.verticalFOV;
+    },
+  });
+  scene.addAnimator(animator);
 
   return { scene, camera };
 }

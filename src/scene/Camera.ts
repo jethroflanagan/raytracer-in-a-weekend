@@ -13,7 +13,7 @@ export class Camera {
   horizontal: Vector3 = null;
   vertical: Vector3 = null;
   origin: Vector3;
-  verticalFOV: number;
+  _verticalFOV: number;
   aspectRatio: number;
   lookAt: Vector3;
   up: Vector3;
@@ -55,10 +55,32 @@ export class Camera {
     this.lensRadius = aperture / 2;
     this.lookAt = lookAt;
     this.up = up;
-    this.verticalFOV = verticalFOV;
     this.aspectRatio = aspectRatio;
     this.shutterOpenTime = shutterOpenTime;
+    this.focalDistance = focalDistance;
+    this.verticalFOV = verticalFOV;
+    // const theta = toRadians(verticalFOV);
+    // const halfHeight = Math.tan(theta / 2);
+    // const halfWidth = aspectRatio * halfHeight;
 
+    // const w = origin.subtract(lookAt).unit(); // z or into scene
+    // const u = up.cross(w).unit();
+    // const v = w.cross(u);
+    // this.w = w;
+    // this.u = u;
+    // this.v = v;
+
+    // this.lowerLeftCorner = origin
+    //   .subtract( u.multiply(halfWidth * focalDistance) )
+    //   .subtract( v.multiply(halfHeight * focalDistance) )
+    //   .subtract( w.multiply(focalDistance) );
+    // this.horizontal = u.multiply(2 * halfWidth * focalDistance);
+    // this.vertical = v.multiply(2 * halfHeight * focalDistance);
+  }
+
+  set verticalFOV(verticalFOV) {
+    const { origin, up, aspectRatio, lookAt, focalDistance } = this;
+    this._verticalFOV = verticalFOV;
     const theta = toRadians(verticalFOV);
     const halfHeight = Math.tan(theta / 2);
     const halfWidth = aspectRatio * halfHeight;
@@ -76,6 +98,10 @@ export class Camera {
       .subtract( w.multiply(focalDistance) );
     this.horizontal = u.multiply(2 * halfWidth * focalDistance);
     this.vertical = v.multiply(2 * halfHeight * focalDistance);
+  }
+
+  get verticalFOV() {
+    return this._verticalFOV;
   }
 
   getRandomPointOnDisc() {
