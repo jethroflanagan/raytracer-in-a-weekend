@@ -27,8 +27,8 @@ function render({ canvas, ui, renderBlock }) {
   // const renderProperties = { antialias: { numSamples: 5, blurRadius: .5, isUniform: false }, quality: 1, resolution: 1 }
   const renderProperties = { quality: 5, resolution: 1 }
 
-  // renderSingle({ canvas,  renderer, renderProperties });
-  renderSequence({ canvas, renderer, renderProperties });
+  renderSingle({ canvas,  renderer, renderProperties });
+  // renderSequence({ canvas, renderer, renderProperties });
 }
 
 function renderSingle({ canvas, renderer, renderProperties }) {
@@ -46,10 +46,11 @@ function renderSingle({ canvas, renderer, renderProperties }) {
 }
 
 async function renderSequence({ canvas, renderer, renderProperties }) {
-  const numFrames = 5;
+  const numFrames = 24;
   const fps = 24;
+  const frameTime = 1000 / fps;
   for (let frame = 0; frame < numFrames; frame++) {
-    await renderer.render({ ...renderProperties, time: 500 + frame * 1000 / fps, timeIncrement: 50 });
+    await renderer.render({ ...renderProperties, time: 0 + frame * frameTime, timeIncrement: frameTime });
 
     const frameCanvas = document.createElement('canvas');
     const el = document.getElementById('frames');

@@ -48,7 +48,9 @@ html, body {
 .frames {
   position: absolute;
   right: 0;
-  top: 0;
   display: flex;
   flex-direction: column;
+  transform-origin: top right;
+  transform: scale(0.2);
+  top: 80px;
 }
