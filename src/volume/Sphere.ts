@@ -3,8 +3,10 @@ import { Vector3 } from 'src/Vector';
 import { Volume } from 'src/volume/Volume';
 import { Ray } from 'src/Ray';
 import { Intersection } from 'src/Intersection';
+import { AABB } from './AABB';
 
 export class Sphere implements Volume {
+
   center: Vector3;
   radius: number;
   material: Material;
@@ -52,4 +54,11 @@ export class Sphere implements Volume {
     return null;
   }
 
+  getBoundingBox(t0: number, t1: number): AABB {
+    const radiusVector = new Vector3(this.radius, this.radius, this.radius);
+    return new AABB(
+      this.center.subtract( radiusVector ),
+      this.center.add( radiusVector )
+    );
+  }
 }

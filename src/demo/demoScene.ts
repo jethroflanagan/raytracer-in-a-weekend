@@ -7,7 +7,7 @@ import { Scene } from 'src/scene/Scene';
 import { Vector3 } from 'src/Vector';
 import { Sphere } from 'src/volume/Sphere';
 import { DialectricMaterial } from 'src/material/DialectricMaterial';
-import { placeSphereOnSurfaceFromPosition } from 'src/utils/math';
+import { placeSphereOnSurfaceFromPosition, random } from 'src/utils/math';
 import { NormalMaterial } from 'src/material/NormalMaterial';
 
 const setupPlaceOnSurface = ({ surfaceCenter, surfaceRadius }) => ({ from, sphereRadius }) => {
@@ -33,12 +33,12 @@ export function create({ aspectRatio, width, height }) {
   const sphere = new Sphere({
     center: placeOnGround({ from: new Vector3(-3, 0, -12), sphereRadius: 2.5 }),
     radius: 2.5,
-    material: new LambertMaterial({ albedo: new Color(Math.random(), Math.random(), Math.random()) }),
+    material: new LambertMaterial({ albedo: new Color(random(), random(), random()) }),
   });
   const sphere2 = new Sphere({
     center: placeOnGround({ from: new Vector3(3, 3, -12), sphereRadius: 1 }),
     radius: 1.0,
-    material: new LambertMaterial({ albedo: new Color(Math.random(), Math.random(), Math.random()) }),
+    material: new LambertMaterial({ albedo: new Color(random(), random(), random()) }),
   });
   const glassSphere = new Sphere({
     center: placeOnGround({ from: new Vector3(1, 0, -10), sphereRadius: 1.5 }),

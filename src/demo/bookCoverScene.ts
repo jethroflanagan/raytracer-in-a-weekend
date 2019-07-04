@@ -6,7 +6,7 @@ import { NormalMaterial } from 'src/material/NormalMaterial';
 import { Camera } from 'src/scene/Camera';
 import { FlatBackground } from 'src/scene/FlatBackground';
 import { Scene } from 'src/scene/Scene';
-import { getRandomPointInCircle, placeSphereOnSurfaceFromPosition, lerp } from 'src/utils/math';
+import { getRandomPointInCircle, placeSphereOnSurfaceFromPosition, lerp, random } from 'src/utils/math';
 import { Vector3 } from 'src/Vector';
 import { Sphere } from 'src/volume/Sphere';
 import { Animator } from 'src/animation/Animator';
@@ -37,12 +37,12 @@ export function create({ aspectRatio, width, height }) {
   const area = 14;
   const areaStart = 4;
   const getMaterial = () => {
-    const pick = Math.random();
+    const pick = random();
     if (pick < .75) {
-        return new LambertMaterial({ albedo: new Color(Math.random(), Math.random(), Math.random()) });
+        return new LambertMaterial({ albedo: new Color(random(), random(), random()) });
     }
     // if (pick < .7) {
-        return new MetalMaterial({ albedo: new Color(Math.random(), Math.random(), Math.random()), reflectance: 1, fuzziness: 0 });
+        return new MetalMaterial({ albedo: new Color(random(), random(), random()), reflectance: 1, fuzziness: 0 });
     // }
     // return new NormalMaterial();
   }
@@ -82,7 +82,7 @@ export function create({ aspectRatio, width, height }) {
   };
 
   for (let i = 0; i < 70; i++) {
-    const size = .5 + Math.random() * 1;
+    const size = .5 + random() * 1;
     let x;
     let z;
     let center;
@@ -98,7 +98,7 @@ export function create({ aspectRatio, width, height }) {
     const sphere5 = new Sphere({
       center: center,
       radius: size,
-      material: getMaterial(),//new MetalMaterial({ albedo: new Color(Math.random(), Math.random(), Math.random()), reflectance: 1, fuzziness: 0 }),//new LambertMaterial({ albedo: new Color(Math.random(), Math.random(), Math.random()) }),
+      material: getMaterial(),//new MetalMaterial({ albedo: new Color(random(), random(), random()), reflectance: 1, fuzziness: 0 }),//new LambertMaterial({ albedo: new Color(random(), random(), random()) }),
     });
     scene.addChild(sphere5);
   }
@@ -114,7 +114,7 @@ export function create({ aspectRatio, width, height }) {
     // up: new Vector3(1, 0, 1),
     aperture: .4,
     focalDistance,
-    shutterOpenTime: 150,
+    shutterOpenTime: 0, //150,
   });
   scene.setActiveCamera(camera);
 

@@ -6,6 +6,7 @@ import { Camera } from 'src/scene/Camera';
 import { Scene } from 'src/scene/Scene';
 import { Vector3 } from 'src/Vector';
 import { Volume } from 'src/volume/Volume';
+import { random } from './utils/math';
 
 const T_MIN = .001;
 const T_MAX = Infinity;
@@ -134,7 +135,7 @@ export class Renderer {
     let colorV: Vector3 = new Vector3(0, 0, 0);
 
     for (let s = 0; s < numSamples; s++) {
-      const angleVal = isUniform ? s / numSamples : Math.random();
+      const angleVal = isUniform ? s / numSamples : random();
       const sampleAngle = angleVal * Math.PI * 2;
       const resultV: Color = this.getColorForXY(
         (x + Math.cos(sampleAngle) * blurRadius),
@@ -165,10 +166,11 @@ export class Renderer {
     this.onStart();
     const { ctx, canvas, width, height } = this;
 
+    // TODO: do this in the UI
     if (resolution !== 1) {
       canvas.width = Math.round(width * resolution)
       canvas.height = Math.round(height * resolution)
-      canvas.setAttribute('style', `transform: scale(${1/resolution})`);
+      canvas.parentElement.setAttribute('style', `transform: scale(${1/resolution})`);
     }
     else {
       canvas.setAttribute('style', '');
@@ -211,7 +213,7 @@ export class Renderer {
         const blendedBuffer = this.blendBuffers(activeBlend);
 
         // unscaled
-        this.onBlockStart(block.x, block.y, blockSize, blockSize);
+        this.onBlockStart(block.x, block.y, blockSize * resolution, blockSize * resolution);
 
         ctx.putImageData(blendedBuffer, block.x, block.y);
 

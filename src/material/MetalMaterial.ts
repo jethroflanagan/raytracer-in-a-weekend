@@ -4,6 +4,7 @@ import { Vector3 } from 'src/Vector';
 import { Intersection } from 'src/Intersection';
 import { Material } from './Material';
 import { reflectVector } from './bounce/reflect-vector';
+import { random } from 'src/utils/math';
 
 export class MetalMaterial implements Material {
   albedo: Color;
@@ -19,7 +20,7 @@ export class MetalMaterial implements Material {
   bounce({ ray, intersection }: { ray: Ray, intersection: Intersection }): { bounceRay: Ray, attenuation: Color } {
     const attenuation = this.albedo;
     let bounceRay = null;
-    if (Math.random() < this.reflectance) {
+    if (random() < this.reflectance) {
       let target = reflectVector({ normal: intersection.normal, direction: ray.direction });
       target = target.add( Vector3.randomDirection().multiply(this.fuzziness).multiply(1-this.reflectance));
       bounceRay = new Ray(intersection.point, target)

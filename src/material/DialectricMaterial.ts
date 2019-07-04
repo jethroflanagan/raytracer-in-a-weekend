@@ -38,13 +38,7 @@ export class DialectricMaterial implements Material {
 
     let bounceRay;
     const { direction, cosine, discriminant } = refractVector({ direction: ray.direction, normal: intersection.normal, refractiveIndex: this.refractiveIndex });
-    // if (Math.random() < this.getReflectionProbability({ cosine: discriminant })) {
-    //   const reflected = reflectVector({ direction: ray.direction, normal: intersection.normal });
-    //   bounceRay = new Ray(intersection.point, reflected);
-    // }
-    // else {
-      bounceRay = new Ray(intersection.point, direction);
-    // }
+    bounceRay = new Ray(intersection.point, direction);
     return {
       attenuation,
       bounceRay,

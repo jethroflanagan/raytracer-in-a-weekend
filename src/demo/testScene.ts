@@ -22,6 +22,7 @@ export function create({ aspectRatio, width, height }) {
     // up: new Vector3(1, 0, 1),
     aperture: 0,//1,
     focalDistance,
+    shutterOpenTime: 0,
   });
 
   const background = new FlatBackground();
@@ -63,6 +64,7 @@ export function create({ aspectRatio, width, height }) {
 
   const scene = new Scene();
   scene.addBackground(background);
+  scene.setActiveCamera(camera);
 
   scene.addChild(sphere, { name: '1' });
   scene.addChild(sphere2, { name: '2' });

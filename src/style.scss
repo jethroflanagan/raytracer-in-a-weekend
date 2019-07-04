@@ -5,6 +5,7 @@ html, body {
 .container {
   position: relative;
   margin: 5px;
+  transform-origin: top left;
 }
 .render {
   transform-origin: top left;

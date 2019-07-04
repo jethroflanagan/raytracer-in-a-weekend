@@ -1,5 +1,5 @@
 import { Color } from './Color';
-
+import { random } from './utils/math'
 // Taken from https://evanw.github.io/lightgl.js/docs/vector.html
 function Vector(x, y, z) {
   this.x = x || 0;
@@ -116,7 +116,7 @@ Vector.fromAngles = function(theta, phi) {
   return new Vector(Math.cos(theta) * Math.cos(phi), Math.sin(phi), Math.sin(theta) * Math.cos(phi));
 };
 Vector.randomDirection = function() {
-  return Vector.fromAngles(Math.random() * Math.PI * 2, Math.asin(Math.random() * 2 - 1));
+  return Vector.fromAngles(random() * Math.PI * 2, Math.asin(random() * 2 - 1));
 };
 Vector.min = function(a, b) {
   return new Vector(Math.min(a.x, b.x), Math.min(a.y, b.y), Math.min(a.z, b.z));

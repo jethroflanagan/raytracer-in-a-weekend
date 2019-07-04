@@ -4,6 +4,7 @@ import { create as createBookCoverScene } from 'src/demo/bookCoverScene';
 import { Renderer } from 'src/Renderer';
 import "src/style.scss";
 import { RenderProgress } from './ui/RenderProgress';
+import { seedRandom, random } from './utils/math';
 
 // TODO: add to scene and move render code into renderer
 function render({ canvas, ui, renderBlock }) {
@@ -11,9 +12,9 @@ function render({ canvas, ui, renderBlock }) {
   const height = canvas.height;
   const aspectRatio = width / height;
 
-  const { scene, camera } = createDemoScene({ aspectRatio, width, height });
+  // const { scene, camera } = createDemoScene({ aspectRatio, width, height });
   // const { scene, camera } = createTestScene({ aspectRatio, width, height });
-  // const { scene, camera } = createBookCoverScene({ aspectRatio, width, height });
+  const { scene, camera } = createBookCoverScene({ aspectRatio, width, height });
   const renderer = new Renderer({ canvas, camera, scene });
 
   const renderProgress = new RenderProgress({ element: ui, block: renderBlock });
@@ -24,8 +25,8 @@ function render({ canvas, ui, renderBlock }) {
     onComplete: () => renderProgress.complete(),
   });
 
-  // const renderProperties = { antialias: { numSamples: 5, blurRadius: .5, isUniform: false }, quality: 1, resolution: 1 }
-  const renderProperties = { quality: 5, resolution: 1 }
+  // const renderProperties = { antialias: { numSamples: 10, blurRadius: .5, isUniform: false }, quality: 20, resolution: 2 }
+  const renderProperties = { quality: 3, resolution: 1 }
 
   renderSingle({ canvas,  renderer, renderProperties });
   // renderSequence({ canvas, renderer, renderProperties });
@@ -42,11 +43,11 @@ function renderSingle({ canvas, renderer, renderProperties }) {
   //   time: 500, timeIncrement: 20,
   // });
 
-  renderer.render({ ...renderProperties, time: 500, timeIncrement: 50 });
+  renderer.render({ ...renderProperties, time: 0, timeIncrement: 50 });
 }
 
 async function renderSequence({ canvas, renderer, renderProperties }) {
-  const numFrames = 24;
+  const numFrames = 10;
   const fps = 24;
   const frameTime = 1000 / fps;
   for (let frame = 0; frame < numFrames; frame++) {
@@ -62,6 +63,7 @@ async function renderSequence({ canvas, renderer, renderProperties }) {
 }
 
 (function run() {
+  seedRandom('test1');
   render({
     canvas: document.getElementById('render'),
     ui: document.getElementById('ui'),
