@@ -8,6 +8,22 @@ export class AABB {
   min: Vector3;
   max: Vector3;
 
+  static getSurroundingBox(box1: AABB, box2: AABB) {
+    let small: Vector3 = new Vector3(
+      Math.min(box1.min.x, box2.min.x),
+      Math.min(box1.min.y, box2.min.y),
+      Math.min(box1.min.z, box2.min.z)
+    );
+
+    let big: Vector3 = new Vector3(
+      Math.max(box1.max.x, box2.max.x),
+      Math.max(box1.max.y, box2.max.y),
+      Math.max(box1.max.z, box2.max.z)
+    );
+
+    return new AABB(small, big);
+  }
+
   constructor(private a?: Vector3, private b?: Vector3) {
     this.min = a;
     this.max = b;
@@ -38,19 +54,4 @@ export class AABB {
     return true;
   }
 
-  getSurroundingBox(box1: AABB, box2: AABB) {
-    let small: Vector3 = new Vector3(
-      Math.min(box1.min.x, box2.min.x),
-      Math.min(box1.min.y, box2.min.y),
-      Math.min(box1.min.z, box2.min.z)
-    );
-
-    let big: Vector3 = new Vector3(
-      Math.max(box1.max.x, box2.max.x),
-      Math.max(box1.max.y, box2.max.y),
-      Math.max(box1.max.z, box2.max.z)
-    );
-
-    return new AABB(small, big);
-  }
 }
