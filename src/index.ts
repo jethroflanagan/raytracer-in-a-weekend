@@ -5,6 +5,8 @@ import { Renderer } from 'src/Renderer';
 import "src/style.scss";
 import { RenderProgress } from './ui/RenderProgress';
 import { seedRandom, random } from './utils/math';
+import { Vector3 } from './Vector';
+import { Ray } from './Ray';
 
 // TODO: add to scene and move render code into renderer
 function render({ canvas, ui, renderBlock }) {
@@ -12,9 +14,9 @@ function render({ canvas, ui, renderBlock }) {
   const height = canvas.height;
   const aspectRatio = width / height;
 
-  // const { scene, camera } = createDemoScene({ aspectRatio, width, height });
+  const { scene, camera } = createDemoScene({ aspectRatio, width, height });
   // const { scene, camera } = createTestScene({ aspectRatio, width, height });
-  const { scene, camera } = createBookCoverScene({ aspectRatio, width, height });
+  // const { scene, camera } = createBookCoverScene({ aspectRatio, width, height });
   const renderer = new Renderer({ canvas, camera, scene });
 
   const renderProgress = new RenderProgress({ element: ui, block: renderBlock });
@@ -26,10 +28,28 @@ function render({ canvas, ui, renderBlock }) {
   });
 
   // const renderProperties = { antialias: { numSamples: 10, blurRadius: .5, isUniform: false }, quality: 20, resolution: 2 }
-  const renderProperties = { quality: 3, resolution: 1 }
+  const renderProperties = { quality: 1, resolution: 1 }
 
   renderSingle({ canvas,  renderer, renderProperties });
+
   // renderSequence({ canvas, renderer, renderProperties });
+
+  testBvh({ scene, camera, renderer });
+}
+
+function testBvh({ scene, camera, renderer }) {
+//   x: -3.9865389730572693
+// y: -1.0504230941146488
+// z: -10.005384410777094
+  const ray = new Ray(camera.origin, new Vector3(-3.9865389730572693, -1.0504230941146488, -10.005384410777094), { time: 0 });
+  const intersection = scene.hitTest(
+    ray,
+    // new Ray(camera.origin, new Vector3(1, -0.05042309411464885, -10), { time: 0 }),
+    0.001,
+    Infinity,
+  );
+
+  console.log(intersection);
 }
 
 function renderSingle({ canvas, renderer, renderProperties }) {

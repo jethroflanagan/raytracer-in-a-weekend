@@ -51,7 +51,6 @@ export function create({ aspectRatio, width, height }) {
     material: new NormalMaterial({ allowShadows: true }),
   });
 
-
   const cameraOrigin = new Vector3(5,1,0);
   const cameraTarget = glassSphere.center;
   const focalDistance = cameraTarget.subtract(cameraOrigin).length();

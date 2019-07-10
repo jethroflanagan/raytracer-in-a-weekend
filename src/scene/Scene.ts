@@ -4,6 +4,7 @@ import { Intersection } from "src/Intersection";
 import { FlatBackground } from "src/scene/FlatBackground";
 import { Camera } from "./Camera";
 import { Animator } from "src/animation/Animator";
+import { BVH_Node } from "src/volume/BVH_Node";
 
 export class Scene {
   children: Volume[] = [];
@@ -11,6 +12,7 @@ export class Scene {
   _time: number;
   animator: Animator;
   camera: Camera;
+  bvh: BVH_Node;
 
   constructor({ time = 0 }: { time?: number } = {}) {
     this._time = time;
@@ -47,6 +49,16 @@ export class Scene {
     return this.camera.getRay(horizontalPercent, verticalPercent, this._time);
   }
 
+  createBoundingVolumeHeirarchies(t0, t1) {
+    this.bvh = new BVH_Node({ volumes: this.children, t0, t1 });
+    console.log(this.bvh);
+  }
+
+  hitTest(ray: Ray, tMin: number, tMax: number): any {
+    const intersection = this.bvh.hit(ray, tMin, tMax);
+    return intersection;
+  }
+
   hit(ray: Ray, tMin: number, tMax: number): { intersection: Intersection, volume: Volume } {
     let closest = {
       t: tMax,
@@ -63,7 +75,7 @@ export class Scene {
         closest.intersection = intersection;
       }
     }
-
+    // TODO: remove "t" from output
     return closest;
   }
 }

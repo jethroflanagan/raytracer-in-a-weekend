@@ -32,10 +32,10 @@ export class AABB {
   // Andrew Kensler (Pixar) optimization
   hit(ray: Ray, tMin: number, tMax: number): boolean {
     const axes = ['x', 'y', 'z'];
-    for (let axis = 0, len = axes.length; axis < len; axis++) {
+    for (const axis of axes) {
       const invD = 1 / ray.direction[axis];
-      let t0 = (this.min[axis] - ray.origin[axis]) / ray.direction[axis];
-      let t1 = (this.max[axis] - ray.origin[axis]) / ray.direction[axis];
+      let t0 = (this.min[axis] - ray.origin[axis]) * invD;
+      let t1 = (this.max[axis] - ray.origin[axis]) * invD;
 
       if (invD < 0) {
         let temp = t0;

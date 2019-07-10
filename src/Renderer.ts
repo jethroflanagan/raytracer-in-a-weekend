@@ -164,7 +164,12 @@ export class Renderer {
   render = async ({ antialias = null, quality = 1, blockSize = 50, resolution = 1, time = 0, timeIncrement = 100 }: RenderOptions = <RenderOptions>{}) => {
     const renderStart = performance.now();
     this.onStart();
+
+    const { scene } = this;
+
     const { ctx, canvas, width, height } = this;
+
+    scene.createBoundingVolumeHeirarchies(T_MIN, T_MAX);
 
     // TODO: do this in the UI
     if (resolution !== 1) {
@@ -189,6 +194,7 @@ export class Renderer {
     // console.log(time, this.scene.camera.shutterOpenTime, timeIncrement);
 
     // render for time
+    // TODO: store buffers for next from and `shift()` as the time moves ahead
     // TODO: (OPTIMIZATION) only re-render buffers that contain an object being animated
     const blendingBlocks = new Array(position.length).fill([], 0, position.length); // used to blend blocks together
     let blendIndex = 0;

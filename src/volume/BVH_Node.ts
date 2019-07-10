@@ -4,12 +4,13 @@ import { Intersection } from "src/Intersection";
 import { Ray } from "src/Ray";
 import { random } from "src/utils/math";
 
-export class BVH_Node implements Volume {
+export class BVH_Node {
   t1: number;
   t0: number;
-  left: Volume;
-  right: Volume;
+  left: BVH_Node;
+  right: BVH_Node;
   box: AABB;
+  volume: Volume;
 
   constructor({ volumes, t0, t1 }: { volumes: Volume[], t0: number, t1: number }) {
     this.t0 = t0;
@@ -19,12 +20,14 @@ export class BVH_Node implements Volume {
     const axis = ['x', 'y', 'z'][~~random(0, 2)];
     volumes.sort((a, b) => this.boxCompareAxis(axis, a, b));
 
+    // TODO: change this to optimize
     if (volumes.length === 1) {
-      this.left = this.right = volumes[0];
+      this.left = this.right = null;
+      this.volume = volumes[0];
     }
     else if (volumes.length === 2) {
-      this.left = volumes[0];
-      this.right = volumes[1];
+      this.left = new BVH_Node({ volumes: [volumes[0]], t0, t1 });
+      this.right = new BVH_Node({ volumes: [volumes[1]], t0, t1 });
     }
     else {
       const halfIndex = Math.ceil(volumes.length / 2);
@@ -48,23 +51,50 @@ export class BVH_Node implements Volume {
     this.box = AABB.getSurroundingBox(leftBox, rightBox);
   }
 
-  hit(ray: Ray, tMin: number, tMax: number): Intersection {
-    if (!this.box.hit(ray, tMax, tMax)) {
+  hit(ray: Ray, tMin: number, tMax: number): { volume: Volume, intersection: Intersection } {
+    if (!this.box.hit(ray, tMin, tMax)) {
       return null;
     }
-    const hitLeft: Intersection = this.left.hit(ray, tMin, tMax);
-    const hitRight: Intersection = this.right.hit(ray, tMin, tMax);
+    const { node, intersection } = this.hitNodes(ray, tMin, tMax);
+    return {
+      volume: node.volume,
+      intersection,
+    }
+    // TODO: change to above return type
+    // const hitLeft: Intersection = this.left.hit(ray, tMin, tMax);
+    // const hitRight: Intersection = this.right.hit(ray, tMin, tMax);
 
+    // if (hitLeft && hitRight) {
+    //   if (hitLeft.t < hitRight.t) {
+    //     return hitLeft;
+    //   }
+    //   return hitRight;
+    // }
+    // if (hitLeft) {
+    //   return hitLeft;
+    // }
+    // return hitRight;
+  }
+
+  hitNodes(ray: Ray, tMin: number, tMax: number): { node: BVH_Node, intersection: Intersection } {
+    if (!this.box.hit(ray, tMin, tMax)) {
+      return null;
+    }
+    const left = this.left.hitNodes(ray, tMin, tMax);
+    const right = this.right.hitNodes(ray, tMin, tMax);
+
+    const { intersection: hitLeft, node: nodeLeft } = left;
+    const { intersection: hitRight, node: nodeRight } = right;
     if (hitLeft && hitRight) {
       if (hitLeft.t < hitRight.t) {
-        return hitLeft;
+        return left;
       }
-      return hitRight;
+      return right;
     }
     if (hitLeft) {
-      return hitLeft;
+      return left;
     }
-    return hitRight;
+    return right;
   }
 
   getBoundingBox(t0: number, t1: number) {
