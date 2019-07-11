@@ -51,7 +51,6 @@ export class Scene {
 
   createBoundingVolumeHeirarchies(t0, t1) {
     this.bvh = new BVH_Node({ volumes: this.children, t0, t1 });
-    console.log(this.bvh);
   }
 
   hitTest(ray: Ray, tMin: number, tMax: number): any {
@@ -60,6 +59,18 @@ export class Scene {
   }
 
   hit(ray: Ray, tMin: number, tMax: number): { intersection: Intersection, volume: Volume } {
+    // const result = this.bvh.hit(ray, tMin, tMax);
+    // if (!result) {
+    //   return {
+    //     intersection: null,
+    //     volume: null,
+    //   }
+    // }
+    // return {
+    //   intersection: result.intersection,
+    //   volume: result.volume,
+    // }
+
     let closest = {
       t: tMax,
       volume: null,

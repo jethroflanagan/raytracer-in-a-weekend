@@ -24,6 +24,8 @@ export class BVH_Node {
     if (volumes.length === 1) {
       this.left = this.right = null;
       this.volume = volumes[0];
+      this.box = this.volume.getBoundingBox(t0, t1);
+      return;
     }
     else if (volumes.length === 2) {
       this.left = new BVH_Node({ volumes: [volumes[0]], t0, t1 });
@@ -52,49 +54,81 @@ export class BVH_Node {
   }
 
   hit(ray: Ray, tMin: number, tMax: number): { volume: Volume, intersection: Intersection } {
-    if (!this.box.hit(ray, tMin, tMax)) {
+    const result = this.hitNodes(ray, tMin, tMax);
+    if (!result) {
       return null;
     }
-    const { node, intersection } = this.hitNodes(ray, tMin, tMax);
-    return {
-      volume: node.volume,
-      intersection,
-    }
-    // TODO: change to above return type
-    // const hitLeft: Intersection = this.left.hit(ray, tMin, tMax);
-    // const hitRight: Intersection = this.right.hit(ray, tMin, tMax);
 
+    const { node, intersection } = result;
+    return {
+      intersection,
+      volume: node.volume,
+    };
+    // if (this.left) {
+    //   const { intersection: hitLeft } = this.left.hit(ray, tMin, tMax);
+    // }
+    // if (this.right) {
+    //   const { intersection: hitRight } = this.right.hit(ray, tMin, tMax);
+    // }
+    // else {
+    //   return this.volume;
+    // }
+
+    // let isLeft = false;
     // if (hitLeft && hitRight) {
-    //   if (hitLeft.t < hitRight.t) {
-    //     return hitLeft;
-    //   }
-    //   return hitRight;
+    //   isLeft = (hitLeft.t < hitRight.t);
     // }
-    // if (hitLeft) {
-    //   return hitLeft;
+    // else {
+    //   isLeft = hitLeft != null;
     // }
-    // return hitRight;
+    // if (isLeft) {
+    //   return { intersection: hitLeft, node: this.left };
+    // }
+    // return { intersection: hitRight, node: this.right };
   }
 
   hitNodes(ray: Ray, tMin: number, tMax: number): { node: BVH_Node, intersection: Intersection } {
     if (!this.box.hit(ray, tMin, tMax)) {
       return null;
     }
-    const left = this.left.hitNodes(ray, tMin, tMax);
-    const right = this.right.hitNodes(ray, tMin, tMax);
 
-    const { intersection: hitLeft, node: nodeLeft } = left;
-    const { intersection: hitRight, node: nodeRight } = right;
-    if (hitLeft && hitRight) {
-      if (hitLeft.t < hitRight.t) {
-        return left;
+    let hitLeft = null;
+    let hitRight = null;
+    let result = null;
+    if (this.left) {
+      result = this.left.hit(ray, tMin, tMax);
+      if (result) {
+        hitLeft = result.intersection;
       }
-      return right;
     }
-    if (hitLeft) {
-      return left;
+    if (this.right) {
+      result = this.right.hit(ray, tMin, tMax);
+      if (result) {
+        hitRight = result.intersection;
+      }
     }
-    return right;
+    else {
+      return {
+        node: this,
+        intersection: this.volume.hit(ray, tMin, tMax),
+      };
+    }
+    if (!hitLeft && !hitRight) {
+      return null;
+    }
+
+    let isLeft = false;
+    if (hitLeft && hitRight) {
+      isLeft = (hitLeft.t < hitRight.t);
+    }
+    else {
+      isLeft = hitLeft != null;
+    }
+    if (isLeft) {
+      return this.left.hitNodes(ray, tMin, tMax);
+    }
+    return this.right.hitNodes(ray, tMin, tMax);
+
   }
 
   getBoundingBox(t0: number, t1: number) {

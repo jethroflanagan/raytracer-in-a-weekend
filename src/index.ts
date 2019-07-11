@@ -28,13 +28,13 @@ function render({ canvas, ui, renderBlock }) {
   });
 
   // const renderProperties = { antialias: { numSamples: 10, blurRadius: .5, isUniform: false }, quality: 20, resolution: 2 }
-  const renderProperties = { quality: 1, resolution: 1 }
+  const renderProperties = { quality: 10, resolution: 1 }
 
   renderSingle({ canvas,  renderer, renderProperties });
 
   // renderSequence({ canvas, renderer, renderProperties });
 
-  testBvh({ scene, camera, renderer });
+  // testBvh({ scene, camera, renderer });
 }
 
 function testBvh({ scene, camera, renderer }) {
@@ -49,7 +49,6 @@ function testBvh({ scene, camera, renderer }) {
     Infinity,
   );
 
-  console.log(intersection);
 }
 
 function renderSingle({ canvas, renderer, renderProperties }) {
