@@ -31,6 +31,19 @@ export class AABB {
 
   // Andrew Kensler (Pixar) optimization
   hit(ray: Ray, tMin: number, tMax: number): boolean {
+    // // https://medium.com/@bromanz/another-view-on-the-classic-ray-aabb-intersection-algorithm-for-bvh-traversal-41125138b525
+    // const invD = rcp(ray.dir);
+    // float3 t0s = (aabb.min - ray.origin) * invD;
+    // float3 t1s = (aabb.max - ray.origin) * invD;
+
+    // float3 tsmaller = min(t0s, t1s);
+    // float3 tbigger  = max(t0s, t1s);
+
+    // tmin = max(tmin, max(tsmaller[0], max(tsmaller[1], tsmaller[2])));
+    // tmax = min(tmax, min(tbigger[0], min(tbigger[1], tbigger[2])));
+
+    // return (tmin < tmax);
+
     const axes = ['x', 'y', 'z'];
     for (const axis of axes) {
       const invD = 1 / ray.direction[axis];
