@@ -49,7 +49,8 @@ export function create({ aspectRatio, width, height }) {
     material: new LambertMaterial({
       albedo: new CheckerTexture({
         even: new ColorTexture(new Color(.5, .8,.5)),
-        odd: new ColorTexture(new Color(.5, .8,.5)),
+        odd: new ColorTexture(new Color(.8, .1,.3)),
+        size: 2,
       })
     }),
   });
