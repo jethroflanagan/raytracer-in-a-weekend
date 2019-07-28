@@ -9,6 +9,7 @@ import { DialectricMaterial } from 'src/material/DialectricMaterial';
 import { NormalMaterial } from 'src/material/NormalMaterial';
 import { FlatMaterial } from 'src/material/FlatMaterial';
 import { Scene } from 'src/scene/Scene';
+import { ColorTexture } from 'src/texture/ColorTexture';
 
 export function create({ aspectRatio, width, height }) {
   const cameraOrigin = new Vector3(10,1,0);
@@ -34,17 +35,17 @@ export function create({ aspectRatio, width, height }) {
   const sphere7 = new Sphere({
     center: new Vector3(3, -.5, -30),
     radius: 1.5,
-    material: new DialectricMaterial({ albedo: new Color(1, 1, 1, 1), reflectance: 0, fuzziness: 0, refractiveIndex: 1.5 }),
+    material: new DialectricMaterial({ albedo: new Color(1, 1, 1), reflectance: 0, fuzziness: 0, refractiveIndex: 1.5 }),
   });
   const sphere2 = new Sphere({
     center: new Vector3(.5, -2.2, -20),
     radius: 1,
-    material: new LambertMaterial({ albedo: new Color(.9, .34, .54) }),
+    material: new LambertMaterial({ albedo: new ColorTexture(new Color(.9, .34, .54)) }),
   });
   const sphere3 = new Sphere({
     center: new Vector3(0, -100, -50),
     radius: 100,
-    material: new LambertMaterial({ albedo: new Color(.5, .8,.5) }),
+    material: new LambertMaterial({ albedo: new ColorTexture(new Color(.5, .8,.5)) }),
   });
   const sphere4 = new Sphere({
     center: new Vector3(5.5, .1, -20), 
@@ -54,12 +55,12 @@ export function create({ aspectRatio, width, height }) {
   const sphere5 = new Sphere({
     center: new Vector3(4.5, 2, -40),
     radius: 2.5, 
-    material: new LambertMaterial({ albedo: new Color(.1, .34, .94) }),
+    material: new LambertMaterial({ albedo: new ColorTexture(new Color(.1, .34, .94)) }),
   });
   const sphere6 = new Sphere({
     center: new Vector3(-10.5, 2, -40),
     radius: 2.5, 
-    material: new FlatMaterial({ albedo: new Color(.8, .34, .94)),
+    material: new FlatMaterial({ albedo: new Color(.8, .34, .94) }),
   });
 
   const scene = new Scene();

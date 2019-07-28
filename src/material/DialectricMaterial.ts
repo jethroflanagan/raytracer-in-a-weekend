@@ -17,7 +17,7 @@ export class DialectricMaterial implements Material {
   fuzziness: number;
   refractiveIndex: number;
 
-  constructor({ albedo = new Color(1, 1, 1, 1), reflectance = 1, fuzziness = 0, refractiveIndex = REFRACTIVE_INDEX_AIR }: {
+  constructor({ albedo = new Color(1, 1, 1), reflectance = 1, fuzziness = 0, refractiveIndex = REFRACTIVE_INDEX_AIR }: {
     albedo?: Color, reflectance?: number, fuzziness?: number, refractiveIndex?: number
   }) {
     this.albedo = albedo;

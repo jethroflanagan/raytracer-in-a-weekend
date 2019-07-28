@@ -126,7 +126,7 @@ export class Renderer {
         return attenuation;
       }
       // error
-      return new Color(1, 0, 0, 1);
+      return new Color(1, 0, 0);
     }
     return background.getColor(ray);
   }
