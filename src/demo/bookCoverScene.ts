@@ -10,6 +10,8 @@ import { getRandomPointInCircle, placeSphereOnSurfaceFromPosition, lerp, random 
 import { Vector3 } from 'src/Vector';
 import { Sphere } from 'src/volume/Sphere';
 import { Animator } from 'src/animation/Animator';
+import { ColorTexture } from 'src/texture/ColorTexture';
+import { CheckerTexture } from 'src/texture/CheckerTexture';
 
 const setupPlaceOnSurface = ({ surfaceCenter, surfaceRadius }) => ({ from, sphereRadius }) => {
   return placeSphereOnSurfaceFromPosition({ from, surfaceCenter, sphereRadius, surfaceRadius });
@@ -27,7 +29,13 @@ export function create({ aspectRatio, width, height }) {
   const ground = new Sphere({
     center: new Vector3(0, -1000, 0),
     radius: groundSize,
-    material: new LambertMaterial({ albedo: new Color(.1, .8, .3) }),
+    material: new LambertMaterial({ albedo:
+      new CheckerTexture({
+        even: new ColorTexture(new Color(.1, .8, .3)),
+        odd: new ColorTexture(new Color(.2, .4, .8)),
+        size: 1,
+      }),
+    }),
   });
   scene.addChild(ground);
 
@@ -39,7 +47,7 @@ export function create({ aspectRatio, width, height }) {
   const getMaterial = () => {
     const pick = random();
     if (pick < .75) {
-        return new LambertMaterial({ albedo: new Color(random(), random(), random()) });
+        return new LambertMaterial({ albedo: new ColorTexture(new Color(random(), random(), random())) });
     }
     // if (pick < .7) {
         return new MetalMaterial({ albedo: new Color(random(), random(), random()), reflectance: 1, fuzziness: 0 });
@@ -52,7 +60,7 @@ export function create({ aspectRatio, width, height }) {
   const bigSphere1 = new Sphere({
     center: placeOnGround({ from: new Vector3(-3, 3, -30), sphereRadius: bigSize }),
     radius: bigSize,
-    material: new MetalMaterial({ albedo: new Color(1,1,1), reflectance: 1, fuzziness: 0 }),
+    material: new DialectricMaterial({ albedo: new Color(1,1,1), reflectance: 1, fuzziness: 0 }),
   });
   const bigSphere2 = new Sphere({
     center: placeOnGround({ from: new Vector3(2, 3, -22), sphereRadius: bigSize }),
