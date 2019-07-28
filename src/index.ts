@@ -14,9 +14,9 @@ function render({ canvas, ui, renderBlock }) {
   const height = canvas.height;
   const aspectRatio = width / height;
 
-  // const { scene, camera } = createDemoScene({ aspectRatio, width, height });
+  const { scene, camera } = createDemoScene({ aspectRatio, width, height });
   // const { scene, camera } = createTestScene({ aspectRatio, width, height });
-  const { scene, camera } = createBookCoverScene({ aspectRatio, width, height });
+  // const { scene, camera } = createBookCoverScene({ aspectRatio, width, height });
   const renderer = new Renderer({ canvas, camera, scene });
 
   const renderProgress = new RenderProgress({ element: ui, block: renderBlock });
@@ -27,7 +27,7 @@ function render({ canvas, ui, renderBlock }) {
     onComplete: () => renderProgress.complete(),
   });
 
-  // const renderProperties = { antialias: { numSamples: 10, blurRadius: .5, isUniform: false }, quality: 20, resolution: 2 }
+  // const renderProperties = { antialias: { numSamples: 10, blurRadius: .5, isUniform: false }, quality: 20, resolution: 1 }
   const renderProperties = { quality: 10, resolution: 1 }
 
   renderSingle({ canvas,  renderer, renderProperties });
@@ -82,7 +82,7 @@ async function renderSequence({ canvas, renderer, renderProperties }) {
 }
 
 (function run() {
-  seedRandom('test1');
+  seedRandom('test1' + Math.random());
   render({
     canvas: document.getElementById('render'),
     ui: document.getElementById('ui'),

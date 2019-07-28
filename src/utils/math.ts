@@ -53,3 +53,16 @@ export const seedRandom = (seed: string) => {
 export const random = (min = 0, max = 1) => {
   return getSeededRandom() * (max - min) + min;
 }
+
+// TODO:
+// export const trilinearInterpolation = (point: Vector3, u, v, w) => {
+//   let accumulator = 0;
+//   for (let i = 0; i < 2; i++) {
+//     for (let j = 0; j < 2; j++) {
+//       for (let k = 0; k < 2; k++) {
+//         const multiplier = (i * u + (1 - i) ** 2) *
+//                            (j * v + (1 - j) ** 2) *
+//                            (k * z + (1 - k) ** 2);
+//         accumulator +=
+
+// }
