@@ -70,12 +70,12 @@ export class Renderer {
     if (!renderBuffer) {
       renderBuffer = globalRenderBuffer;
     }
-    const { r, g, b, a } = color;
+    const { r, g, b } = color;
     const index = y * (width * 4) + x * 4;
     renderBuffer.data[index] = ~~(r * 255);
     renderBuffer.data[index + 1] = ~~(g * 255);
     renderBuffer.data[index + 2] = ~~(b * 255);
-    renderBuffer.data[index + 3] = ~~(a * 255);
+    renderBuffer.data[index + 3] = ~~(1 * 255);
     return renderBuffer;
   }
 
@@ -105,7 +105,7 @@ export class Renderer {
     if (intersection != null) {
       let color: Color = null;
       if (depth >= MAX_RAY_DEPTH) {
-        return new Color(0, 0, 0, 1);
+        return new Color(0, 0, 0);
       }
       // color = this.shadeNormal({ intersection, volume });return color;
       // const origin = intersection.point;
