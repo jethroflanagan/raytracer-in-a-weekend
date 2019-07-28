@@ -9,6 +9,7 @@ import { Sphere } from 'src/volume/Sphere';
 import { DialectricMaterial } from 'src/material/DialectricMaterial';
 import { placeSphereOnSurfaceFromPosition, random } from 'src/utils/math';
 import { NormalMaterial } from 'src/material/NormalMaterial';
+import { ColorTexture } from 'src/texture/ColorTexture';
 
 const setupPlaceOnSurface = ({ surfaceCenter, surfaceRadius }) => ({ from, sphereRadius }) => {
   return placeSphereOnSurfaceFromPosition({ from, surfaceCenter, sphereRadius, surfaceRadius });
@@ -25,7 +26,7 @@ export function create({ aspectRatio, width, height }) {
   const ground = new Sphere({
     center: groundCenter,
     radius: groundSize,
-    material: new LambertMaterial({ albedo: new Color(.1, .8, .3) }),
+    material: new LambertMaterial({ albedo: new ColorTexture(new Color(.1, .8, .3)) }),
   });
 
   const placeOnGround = setupPlaceOnSurface({ surfaceCenter: groundCenter, surfaceRadius: groundSize });
@@ -33,12 +34,12 @@ export function create({ aspectRatio, width, height }) {
   const sphere = new Sphere({
     center: placeOnGround({ from: new Vector3(-3, 0, -12), sphereRadius: 2.5 }),
     radius: 2.5,
-    material: new LambertMaterial({ albedo: new Color(random(), random(), random()) }),
+    material: new LambertMaterial({ albedo: new ColorTexture(new Color(random(), random(), random())) }),
   });
   const sphere2 = new Sphere({
     center: placeOnGround({ from: new Vector3(3, 3, -12), sphereRadius: 1 }),
     radius: 1.0,
-    material: new LambertMaterial({ albedo: new Color(random(), random(), random()) }),
+    material: new LambertMaterial({ albedo: new ColorTexture(new Color(random(), random(), random())) }),
   });
   const glassSphere = new Sphere({
     center: placeOnGround({ from: new Vector3(1, 0, -10), sphereRadius: 1.5 }),

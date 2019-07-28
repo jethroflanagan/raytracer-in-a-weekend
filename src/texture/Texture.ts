@@ -1,6 +1,6 @@
 import { Color } from 'src/Color';
+import { Intersection } from 'src/Intersection';
 
 export interface Texture {
-
-  getColor({ u, v }: { u: number, v: number }): Color;
+  getColor({ u, v, intersection }: { u: number, v: number, intersection: Intersection }): Color;
 }

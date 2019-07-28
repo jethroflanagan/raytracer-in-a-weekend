@@ -1,15 +1,16 @@
-import { FlatBackground } from 'src/scene/FlatBackground';
-import { Vector3 } from 'src/Vector';
-import { Camera } from 'src/scene/Camera';
-import { Sphere } from 'src/volume/Sphere';
-import { MetalMaterial } from 'src/material/MetalMaterial';
 import { Color } from 'src/Color';
-import { LambertMaterial } from 'src/material/LambertMaterial';
 import { DialectricMaterial } from 'src/material/DialectricMaterial';
-import { NormalMaterial } from 'src/material/NormalMaterial';
 import { FlatMaterial } from 'src/material/FlatMaterial';
+import { LambertMaterial } from 'src/material/LambertMaterial';
+import { MetalMaterial } from 'src/material/MetalMaterial';
+import { NormalMaterial } from 'src/material/NormalMaterial';
+import { Camera } from 'src/scene/Camera';
+import { FlatBackground } from 'src/scene/FlatBackground';
 import { Scene } from 'src/scene/Scene';
+import { CheckerTexture } from 'src/texture/CheckerTexture';
 import { ColorTexture } from 'src/texture/ColorTexture';
+import { Vector3 } from 'src/Vector';
+import { Sphere } from 'src/volume/Sphere';
 
 export function create({ aspectRatio, width, height }) {
   const cameraOrigin = new Vector3(10,1,0);
@@ -42,10 +43,15 @@ export function create({ aspectRatio, width, height }) {
     radius: 1,
     material: new LambertMaterial({ albedo: new ColorTexture(new Color(.9, .34, .54)) }),
   });
-  const sphere3 = new Sphere({
+  const ground = new Sphere({
     center: new Vector3(0, -100, -50),
     radius: 100,
-    material: new LambertMaterial({ albedo: new ColorTexture(new Color(.5, .8,.5)) }),
+    material: new LambertMaterial({
+      albedo: new CheckerTexture({
+        even: new ColorTexture(new Color(.5, .8,.5)),
+        odd: new ColorTexture(new Color(.5, .8,.5)),
+      })
+    }),
   });
   const sphere4 = new Sphere({
     center: new Vector3(5.5, .1, -20), 
@@ -69,7 +75,7 @@ export function create({ aspectRatio, width, height }) {
 
   scene.addChild(sphere, { name: '1' });
   scene.addChild(sphere2, { name: '2' });
-  scene.addChild(sphere3, { name: 'ground' });
+  scene.addChild(ground, { name: 'ground' });
   scene.addChild(sphere4, { name: '4' });
   scene.addChild(sphere5, { name: '5' });
   scene.addChild(sphere6, { name: '6' });
