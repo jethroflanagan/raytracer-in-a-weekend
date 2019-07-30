@@ -55,14 +55,17 @@ export const random = (min = 0, max = 1) => {
 }
 
 // TODO:
-// export const trilinearInterpolation = (point: Vector3, u, v, w) => {
-//   let accumulator = 0;
-//   for (let i = 0; i < 2; i++) {
-//     for (let j = 0; j < 2; j++) {
-//       for (let k = 0; k < 2; k++) {
-//         const multiplier = (i * u + (1 - i) ** 2) *
-//                            (j * v + (1 - j) ** 2) *
-//                            (k * z + (1 - k) ** 2);
-//         accumulator +=
-
-// }
+export const trilinearInterpolation = (block, u, v, w) => {
+  let accumulator = 0;
+  for (let i = 0; i < 2; i++) {
+    for (let j = 0; j < 2; j++) {
+      for (let k = 0; k < 2; k++) {
+        const smoothed = (i * u + (1 - i) * (1 - u)) *
+                         (j * v + (1 - j) * (1 - v)) *
+                         (k * w + (1 - k) * (1 - w));
+        accumulator += block[i][j][k] * smoothed;
+      }
+    }
+  }
+  return accumulator;
+}

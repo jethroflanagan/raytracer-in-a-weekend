@@ -1,44 +1,64 @@
 import { Vector3 } from "src/Vector";
-import { random } from "src/utils/math";
+import { random, trilinearInterpolation } from "src/utils/math";
 
+const SIZE = 256;
 export class PerlinNoise {
-  private xRange;
-  private yRange;
-  private zRange;
+  private permutationX;
+  private permutationY;
+  private permutationZ;
   private randomList;
-  private size;
+  private scale;
 
-  constructor(size: number = 1) {
-    const SIZE = 256;
-    this.randomList = this.generate(SIZE);
-    this.xRange = this.permuteUniqueList(SIZE);
-    this.yRange = this.permuteUniqueList(SIZE);
-    this.zRange = this.permuteUniqueList(SIZE);
-    this.size = 1 / size; // invert so larger numbers = larger squares
+  constructor({ scale = 1 } : { scale?: number } = {}) {
+    this.randomList = this.generate();
+    this.permutationX = this.permuteUniqueList();
+    this.permutationY = this.permuteUniqueList();
+    this.permutationZ = this.permuteUniqueList();
+    this.scale = 1 / scale; // invert so larger numbers = larger squares
   }
 
   getValue(point: Vector3) {
-    const size = this.randomList.length;
-    // const floorX = ~~(point.x);
-    // const floorY = ~~(point.y);
-    // const floorZ = ~~(point.z);
-    // const u = point.x - floorX;
-    // const v = point.y - floorY;
-    // const w = point.z - floorZ;
+    const floorX = ~~(point.x);
+    const floorY = ~~(point.y);
+    const floorZ = ~~(point.z);
+    const u = point.x - floorX;
+    const v = point.y - floorY;
+    const w = point.z - floorZ;
 
-    const i = (4 * point.x * this.size) & (size - 1);
-    const j = (4 * point.y * this.size) & (size - 1);
-    const k = (4 * point.z * this.size) & (size - 1);
-    return this.randomList[
-      this.xRange[i] ^
-      this.yRange[j] ^
-      this.zRange[k]
-    ];
+    const i = floorX;
+    const j = floorY;
+    const k = floorZ;
+
+    const block = new Array(2);
+    // build block for trilinear interpolation
+    for (let di = 0; di < 2; di++) {
+      for (let dj = 0; dj < 2; dj++) {
+        if (!block[di]) {
+          block[di] = new Array(2);
+        }
+        for (let dk = 0; dk < 2; dk++) {
+          if (!block[di][dk]) {
+            block[di][dk] = new Array(2);
+          }
+          block[di][dj][dk] = this.randomList[
+            this.permutationX[(i + di) & (SIZE - 1)] ^
+            this.permutationY[(j + dj) & (SIZE - 1)] ^
+            this.permutationZ[(k + dk) & (SIZE - 1)]
+          ];
+        }
+      }
+    }
+    return trilinearInterpolation(block, u, v, w);
+    // return this.randomList[
+    //   this.permutationX[i] ^
+    //   this.permutationY[j] ^
+    //   this.permutationZ[k]
+    // ];
   }
 
-  private generate(size) {
-    const randomList = [];
-    for (let i = 0; i < size; i++) {
+  private generate() {
+    const randomList = new Array(SIZE);
+    for (let i = 0; i < SIZE; i++) {
       randomList[i] = random();
     }
     return randomList;
@@ -54,9 +74,9 @@ export class PerlinNoise {
     return list;
   }
 
-  private permuteUniqueList(size) {
-    const list = [];
-    for (let i = 0; i < size; i++) {
+  private permuteUniqueList() {
+    const list = new Array(SIZE);
+    for (let i = 0; i < SIZE; i++) {
       list[i] = i;
     }
     this.permute(list);
