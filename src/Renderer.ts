@@ -1,5 +1,4 @@
 import { Color } from 'src/Color';
-import { Image } from 'src/Image';
 import { Intersection } from 'src/Intersection';
 import { Ray } from 'src/Ray';
 import { Camera } from 'src/scene/Camera';
@@ -77,19 +76,6 @@ export class Renderer {
     renderBuffer.data[index + 2] = ~~(b * 255);
     renderBuffer.data[index + 3] = ~~(1 * 255);
     return renderBuffer;
-  }
-
-  saveImage() {
-    const { width, height } = this;
-    const image: Image = new Image(width, height);
-
-    for (let y: number = 0; y < height; y++) {
-      for (let x: number = 0; x < width; x++) {
-        const color = image.getPixel(x, y);
-        image.setPixel(x, y, color);
-      }
-    }
-    return image;
   }
 
   shadeNormal({ intersection, volume }: { intersection: Intersection, volume: Volume }): Color {

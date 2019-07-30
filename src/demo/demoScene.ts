@@ -28,7 +28,7 @@ export function create({ aspectRatio, width, height }) {
     center: groundCenter,
     radius: groundSize,
     // material: new LambertMaterial({ albedo: new ColorTexture(new Color(.1, .8, .3)) }),
-    material: new LambertMaterial({ albedo: new NoiseTexture() }),
+    material: new LambertMaterial({ albedo: new NoiseTexture({ scale: 1, turbulance: 5 }) }),
   });
 
   const placeOnGround = setupPlaceOnSurface({ surfaceCenter: groundCenter, surfaceRadius: groundSize });

@@ -1,12 +1,12 @@
-import { create as createTestScene } from 'src/demo/testScene';
 import { create as createDemoScene } from 'src/demo/demoScene';
-import { create as createBookCoverScene } from 'src/demo/bookCoverScene';
 import { Renderer } from 'src/Renderer';
 import "src/style.scss";
-import { RenderProgress } from './ui/RenderProgress';
-import { seedRandom, random } from './utils/math';
-import { Vector3 } from './Vector';
 import { Ray } from './Ray';
+import { RenderProgress } from './ui/RenderProgress';
+import { seedRandom } from './utils/math';
+import { Vector3 } from './Vector';
+import { Color } from './Color';
+import imagePath from './demo/earth-map.jpg';
 
 // TODO: add to scene and move render code into renderer
 function render({ canvas, ui, renderBlock }) {
@@ -81,7 +81,24 @@ async function renderSequence({ canvas, renderer, renderProperties }) {
   }
 }
 
+function loadTexture(imagePath) {
+  console.log('y', imagePath);
+  const img = new Image();
+  return new Promise(resolve => {
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0);
+      resolve(img);
+    };
+    img.src = imagePath;
+  });
+}
+
 (function run() {
+  loadTexture(imagePath);
   seedRandom('test1' + Math.random());
   render({
     canvas: document.getElementById('render'),

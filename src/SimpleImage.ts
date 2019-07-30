@@ -1,6 +1,6 @@
 import { Color } from 'src/Color';
 
-export class Image {
+export class SimpleImage {
   private pixels: Color[][] = null;
   private _width: number;
   private _height: number;
