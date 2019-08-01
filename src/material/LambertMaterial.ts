@@ -14,8 +14,8 @@ export class LambertMaterial implements Material {
     this.reflectance = reflectance;
   }
 
-  bounce({ ray, intersection }: { ray: Ray, intersection: Intersection }): { bounceRay: Ray, attenuation: Color } {
-    const attenuation = this.albedo.getColor({ u: 0, v: 0, intersection });
+  bounce({ ray, intersection, u, v }: { ray: Ray, intersection: Intersection, u: number, v: number }): { bounceRay: Ray, attenuation: Color } {
+    const attenuation = this.albedo.getColor({ u, v, intersection });
     let bounceRay = null;
     const target = intersection.normal.add(Vector3.randomDirection().multiply(1 - this.reflectance));
     bounceRay = new Ray(intersection.point, target);

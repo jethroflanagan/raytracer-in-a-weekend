@@ -6,15 +6,14 @@ import { RenderProgress } from './ui/RenderProgress';
 import { seedRandom } from './utils/math';
 import { Vector3 } from './Vector';
 import { Color } from './Color';
-import imagePath from './demo/earth-map.jpg';
 
 // TODO: add to scene and move render code into renderer
-function render({ canvas, ui, renderBlock }) {
+async function render({ canvas, ui, renderBlock }) {
   const width = canvas.width;
   const height = canvas.height;
   const aspectRatio = width / height;
 
-  const { scene, camera } = createDemoScene({ aspectRatio, width, height });
+  const { scene, camera } = await createDemoScene({ aspectRatio, width, height });
   // const { scene, camera } = createTestScene({ aspectRatio, width, height });
   // const { scene, camera } = createBookCoverScene({ aspectRatio, width, height });
   const renderer = new Renderer({ canvas, camera, scene });
@@ -81,25 +80,8 @@ async function renderSequence({ canvas, renderer, renderProperties }) {
   }
 }
 
-function loadTexture(imagePath) {
-  console.log('y', imagePath);
-  const img = new Image();
-  return new Promise(resolve => {
-    img.onload = () => {
-      const canvas = document.createElement('canvas');
-      canvas.width = img.width;
-      canvas.height = img.height;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(img, 0, 0);
-      resolve(img);
-    };
-    img.src = imagePath;
-  });
-}
-
 (function run() {
-  loadTexture(imagePath);
-  seedRandom('test1' + Math.random());
+  seedRandom('test8');
   render({
     canvas: document.getElementById('render'),
     ui: document.getElementById('ui'),

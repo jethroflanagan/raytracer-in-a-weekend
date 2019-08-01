@@ -11,14 +11,18 @@ import { placeSphereOnSurfaceFromPosition, random } from 'src/utils/math';
 import { NormalMaterial } from 'src/material/NormalMaterial';
 import { ColorTexture } from 'src/texture/ColorTexture';
 import { NoiseTexture } from 'src/texture/NoiseTexture';
+import { ImageTexture } from 'src/texture/ImageTexture';
+import { SimpleImage } from 'src/SimpleImage';
+import earthImageAsset from 'src/demo/earth-map.jpg';
+import marsImageAsset from 'src/demo/mars-map.jpg';
+import { CheckerTexture } from 'src/texture/CheckerTexture';
 
 const setupPlaceOnSurface = ({ surfaceCenter, surfaceRadius }) => ({ from, sphereRadius }) => {
   return placeSphereOnSurfaceFromPosition({ from, surfaceCenter, sphereRadius, surfaceRadius });
 }
 
-export function create({ aspectRatio, width, height }) {
+export async function create({ aspectRatio, width, height }) {
   const scene = new Scene();
-
 
   const background = new FlatBackground();
 
@@ -36,13 +40,19 @@ export function create({ aspectRatio, width, height }) {
   const sphere = new Sphere({
     center: placeOnGround({ from: new Vector3(-3, 0, -12), sphereRadius: 2.5 }),
     radius: 2.5,
-    material: new LambertMaterial({ albedo: new ColorTexture(new Color(random(), random(), random())) }),
+    material: new LambertMaterial({
+      albedo: new CheckerTexture({
+        even: new ColorTexture(new Color(random(), random(), random())),
+        odd: new ColorTexture(new Color(random(), random(), random())),
+        size: .5
+     }),
+    }),
   });
   const sphere2 = new Sphere({
     center: placeOnGround({ from: new Vector3(3, 3, -12), sphereRadius: 1 }),
     radius: 1.0,
     // material: new LambertMaterial({ albedo: new ColorTexture(new Color(random(), random(), random())) }),
-    material: new LambertMaterial({ albedo: new NoiseTexture() }),
+    material: new LambertMaterial({ albedo: new ImageTexture(await SimpleImage.load(earthImageAsset)) }),
   });
   const glassSphere = new Sphere({
     center: placeOnGround({ from: new Vector3(1, 0, -10), sphereRadius: 1.5 }),
@@ -55,7 +65,8 @@ export function create({ aspectRatio, width, height }) {
     material: new NormalMaterial({ allowShadows: true }),
   });
 
-  const cameraOrigin = new Vector3(5,1,0);
+  // const cameraOrigin = new Vector3(5,1,0);
+  const cameraOrigin = new Vector3(5,0,0);
   const cameraTarget = glassSphere.center;
   const focalDistance = cameraTarget.subtract(cameraOrigin).length();
   const camera: Camera = new Camera({

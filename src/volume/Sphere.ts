@@ -61,4 +61,13 @@ export class Sphere implements Volume {
       this.center.add( radiusVector )
     );
   }
+
+  getUV(point: Vector3) {
+    const unitPoint = point.subtract(this.center).divide(this.radius);
+    const phi = Math.atan2(unitPoint.z, unitPoint.x);
+    const theta = Math.asin(unitPoint.y);
+    const u = 1 - (phi + Math.PI) / (2 * Math.PI);
+    const v = 1 - (theta + Math.PI / 2) / Math.PI;
+    return { u, v };
+  }
 }

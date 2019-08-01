@@ -104,7 +104,8 @@ export class Renderer {
       // color = vectorToColor(colorV);
 
       if (volume.material) {
-        const { attenuation, bounceRay } = volume.material.bounce({ ray, intersection });
+        const { u, v } = volume.getUV(intersection.point);
+        const { attenuation, bounceRay } = volume.material.bounce({ ray, intersection, u, v });
         if (bounceRay) {
           color = this.getColorForRay(bounceRay, depth + 1)//.toVector().multiply(attenuation.toVector()).toColor();
           return color.toVector().multiply(attenuation.toVector()).toColor();
@@ -155,7 +156,8 @@ export class Renderer {
 
     const { ctx, canvas, width, height } = this;
 
-    scene.createBoundingVolumeHeirarchies(T_MIN, T_MAX);
+    // TODO: fix this
+    // scene.createBoundingVolumeHeirarchies(T_MIN, T_MAX);
 
     // TODO: do this in the UI
     if (resolution !== 1) {

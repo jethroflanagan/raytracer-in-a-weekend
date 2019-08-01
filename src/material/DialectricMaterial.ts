@@ -33,7 +33,7 @@ export class DialectricMaterial implements Material {
     return r0 + (1 - r0) * ((1 - cosine) ** 5);
   }
 
-  bounce({ ray, intersection }: { ray: Ray, intersection: Intersection }): { bounceRay: Ray, attenuation: Color } {
+  bounce({ ray, intersection, u, v }: { ray: Ray, intersection: Intersection, u: number, v: number }): { bounceRay: Ray, attenuation: Color } {
     const attenuation = this.albedo;
 
     let bounceRay;

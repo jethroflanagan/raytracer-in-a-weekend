@@ -17,7 +17,7 @@ export class MetalMaterial implements Material {
     this.fuzziness = fuzziness;
   }
 
-  bounce({ ray, intersection }: { ray: Ray, intersection: Intersection }): { bounceRay: Ray, attenuation: Color } {
+  bounce({ ray, intersection, u, v }: { ray: Ray, intersection: Intersection, u: number, v: number }): { bounceRay: Ray, attenuation: Color } {
     const attenuation = this.albedo;
     let bounceRay = null;
     if (random() < this.reflectance) {
