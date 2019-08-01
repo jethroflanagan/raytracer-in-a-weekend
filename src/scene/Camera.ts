@@ -92,6 +92,7 @@ export class Camera {
     this.u = u;
     this.v = v;
 
+    // TODO: rotate based on origin vs. lookat. Currently distorts
     this.lowerLeftCorner = origin
       .subtract( u.multiply(halfWidth * focalDistance) )
       .subtract( v.multiply(halfHeight * focalDistance) )

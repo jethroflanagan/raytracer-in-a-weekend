@@ -1,4 +1,6 @@
 import { create as createDemoScene } from 'src/demo/demoScene';
+import { create as createTestScene } from 'src/demo/testScene';
+import { create as createBookCoverScene } from 'src/demo/bookCoverScene';
 import { Renderer } from 'src/Renderer';
 import "src/style.scss";
 import { Ray } from './Ray';
@@ -13,9 +15,9 @@ async function render({ canvas, ui, renderBlock }) {
   const height = canvas.height;
   const aspectRatio = width / height;
 
-  const { scene, camera } = await createDemoScene({ aspectRatio, width, height });
-  // const { scene, camera } = createTestScene({ aspectRatio, width, height });
-  // const { scene, camera } = createBookCoverScene({ aspectRatio, width, height });
+  // const { scene, camera } = await createDemoScene({ aspectRatio, width, height });
+  // const { scene, camera } = await createTestScene({ aspectRatio, width, height });
+  const { scene, camera } = await createBookCoverScene({ aspectRatio, width, height });
   const renderer = new Renderer({ canvas, camera, scene });
 
   const renderProgress = new RenderProgress({ element: ui, block: renderBlock });
@@ -26,8 +28,8 @@ async function render({ canvas, ui, renderBlock }) {
     onComplete: () => renderProgress.complete(),
   });
 
-  // const renderProperties = { antialias: { numSamples: 10, blurRadius: .5, isUniform: false }, quality: 20, resolution: 1 }
-  const renderProperties = { quality: 10, resolution: 1 }
+  const renderProperties = { antialias: { numSamples: 10, blurRadius: .5, isUniform: false }, quality: 20, resolution: 1 }
+  // const renderProperties = { quality: 10, resolution: 1 }
 
   renderSingle({ canvas,  renderer, renderProperties });
 

@@ -12,12 +12,16 @@ import { Sphere } from 'src/volume/Sphere';
 import { Animator } from 'src/animation/Animator';
 import { ColorTexture } from 'src/texture/ColorTexture';
 import { CheckerTexture } from 'src/texture/CheckerTexture';
+import { ImageTexture } from 'src/texture/ImageTexture';
+import { SimpleImage } from 'src/SimpleImage';
+import marsImageAsset from 'src/demo/earth-map2.jpg';
+import { NoiseTexture } from 'src/texture/NoiseTexture';
 
 const setupPlaceOnSurface = ({ surfaceCenter, surfaceRadius }) => ({ from, sphereRadius }) => {
   return placeSphereOnSurfaceFromPosition({ from, surfaceCenter, sphereRadius, surfaceRadius });
 }
 
-export function create({ aspectRatio, width, height }) {
+export async function create({ aspectRatio, width, height }) {
 
   const scene = new Scene();
 
@@ -58,9 +62,9 @@ export function create({ aspectRatio, width, height }) {
 
   const bigSize = 3;
   const bigSphere1 = new Sphere({
-    center: placeOnGround({ from: new Vector3(-3, 3, -30), sphereRadius: bigSize }),
+    center: placeOnGround({ from: new Vector3(-4, 3, -20), sphereRadius: bigSize }),
     radius: bigSize,
-    material: new DialectricMaterial({ albedo: new Color(1,1,1), reflectance: 1, fuzziness: 0 }),
+    material: new LambertMaterial({ albedo: new ImageTexture(await SimpleImage.load(marsImageAsset)) }),
   });
   const bigSphere2 = new Sphere({
     center: placeOnGround({ from: new Vector3(2, 3, -22), sphereRadius: bigSize }),
@@ -69,13 +73,19 @@ export function create({ aspectRatio, width, height }) {
   });
 
   const bigSphere3 = new Sphere({
-    center: placeOnGround({ from: new Vector3(5, 3, -37), sphereRadius: bigSize }),
+    center: placeOnGround({ from: new Vector3(6, 3, -27), sphereRadius: bigSize }),
     radius: bigSize,
-    material: new NormalMaterial(),
+    material: new DialectricMaterial({ albedo: new Color(1,1,1), reflectance: 1, fuzziness: 0 }),
+  });
+  const bigSphere4 = new Sphere({
+    center:  placeOnGround({ from: new Vector3(-1, 5, -17), sphereRadius: bigSize }).add(new Vector3(0, 3, 0)),
+    radius: 1.3,
+    material: new LambertMaterial({ albedo: new NoiseTexture({ scale: 1, turbulance: 6 }) }),
   });
   scene.addChild(bigSphere1);
   scene.addChild(bigSphere2);
   scene.addChild(bigSphere3);
+  scene.addChild(bigSphere4);
   positions.push({ position: bigSphere1.center, radius: bigSize });
   positions.push({ position: bigSphere2.center, radius: bigSize });
   positions.push({ position: bigSphere3.center, radius: bigSize });
@@ -111,7 +121,7 @@ export function create({ aspectRatio, width, height }) {
     scene.addChild(sphere5);
   }
 
-  const cameraOrigin = new Vector3(0,10,0);
+  const cameraOrigin = new Vector3(0,10,5);
   const cameraTarget = bigSphere2.center;
   const focalDistance = cameraTarget.subtract(cameraOrigin).length();
   const camera: Camera = new Camera({

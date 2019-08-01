@@ -28,7 +28,7 @@ export function getRandomPointInCircle({ radius = 1, expand = 0 }: { radius: num
 
 export function placeSphereOnSurfaceFromPosition({ from, surfaceCenter, surfaceRadius, sphereRadius }:
   { from: Vector3, surfaceCenter: Vector3, surfaceRadius: number, sphereRadius: number }
-) {
+): Vector3 {
   const diff = from.subtract(surfaceCenter).length() - surfaceRadius  - sphereRadius;
   let { direction } = new Ray(from, surfaceCenter);
   direction = direction.unit().multiply(diff);
