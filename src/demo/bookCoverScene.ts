@@ -14,7 +14,7 @@ import { ColorTexture } from 'src/texture/ColorTexture';
 import { CheckerTexture } from 'src/texture/CheckerTexture';
 import { ImageTexture } from 'src/texture/ImageTexture';
 import { SimpleImage } from 'src/SimpleImage';
-import marsImageAsset from 'src/demo/earth-map2.jpg';
+import earthImageAsset from 'src/demo/earth-map2.png';
 import { NoiseTexture } from 'src/texture/NoiseTexture';
 
 const setupPlaceOnSurface = ({ surfaceCenter, surfaceRadius }) => ({ from, sphereRadius }) => {
@@ -64,7 +64,7 @@ export async function create({ aspectRatio, width, height }) {
   const bigSphere1 = new Sphere({
     center: placeOnGround({ from: new Vector3(-4, 3, -20), sphereRadius: bigSize }),
     radius: bigSize,
-    material: new LambertMaterial({ albedo: new ImageTexture(await SimpleImage.load(marsImageAsset)) }),
+    material: new LambertMaterial({ albedo: new ImageTexture(await SimpleImage.load(earthImageAsset)) }),
   });
   const bigSphere2 = new Sphere({
     center: placeOnGround({ from: new Vector3(2, 3, -22), sphereRadius: bigSize }),
