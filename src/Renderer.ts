@@ -104,7 +104,7 @@ export class Renderer {
       // color = vectorToColor(colorV);
 
       if (volume.material) {
-        const { u, v } = volume.getUV(intersection.point);
+        const { u, v } = intersection;
         let { attenuation, bounceRay, emission } = volume.material.bounce({ ray, intersection, u, v });
         if (!emission) {
           emission = new Color(0,0,0);

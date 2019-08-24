@@ -10,6 +10,4 @@ export interface Volume {
   hit(ray: Ray, tMin: number, tMax: number): Intersection;
 
   getBoundingBox(t0: number, t1: number): AABB;
-
-  getUV(point: Vector3): { u: number, v: number };
 }

@@ -44,10 +44,13 @@ export class Sphere implements Volume {
     }
 
     if (point) {
+      const { u, v } = this.getUV(point);
       return <Intersection>{
         t,
         point,
         normal: point.subtract(this.center).divide(this.radius),
+        u,
+        v,
       };
     }
 

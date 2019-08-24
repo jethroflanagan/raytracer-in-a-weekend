@@ -29,7 +29,7 @@ async function render({ canvas, ui, renderBlock }) {
   });
 
   // const renderProperties = { antialias: { numSamples: 5, blurRadius: 1, isUniform: false }, quality: 100, resolution: 1 }
-  const renderProperties = { quality: 20, resolution: 1 }
+  const renderProperties = { quality: 20, resolution: .5 }
 
   renderSingle({ canvas,  renderer, renderProperties });
 

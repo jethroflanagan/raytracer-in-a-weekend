@@ -17,6 +17,7 @@ import earthImageAsset from 'src/demo/earth-map.jpg';
 import marsImageAsset from 'src/demo/mars-map.jpg';
 import { CheckerTexture } from 'src/texture/CheckerTexture';
 import { EmissionMaterial } from 'src/material/EmissionMaterial';
+import { Plane } from 'src/volume/Plane';
 
 const setupPlaceOnSurface = ({ surfaceCenter, surfaceRadius }) => ({ from, sphereRadius }) => {
   return placeSphereOnSurfaceFromPosition({ from, surfaceCenter, sphereRadius, surfaceRadius });
@@ -60,10 +61,14 @@ export async function create({ aspectRatio, width, height }) {
     radius: 1.5,
     material: new DialectricMaterial({ refractiveIndex: 1.4 }),
   });
-  const sphereNormal = new Sphere({
+  const sphereLight = new Sphere({
     center: placeOnGround({ from: new Vector3(0, 0, -8), sphereRadius: .7 }),
     radius: .7,
-    material: new EmissionMaterial({ albedo: new ColorTexture(new Color(1,1,1)), brightness: 10 }),
+    material: new EmissionMaterial({ albedo: new ColorTexture(new Color(1,1,1)), brightness: 5 }),
+  });
+
+  const planeLight = new Plane({ x0: 2, x1: 5, y0: -1, y1: 2, k: -15,
+    material: new EmissionMaterial({ albedo: new ColorTexture(new Color(1,1,1)), brightness: 5 }),
   });
 
   // const cameraOrigin = new Vector3(5,1,0);
@@ -87,7 +92,8 @@ export async function create({ aspectRatio, width, height }) {
   scene.addChild(sphere);
   scene.addChild(sphere2);
   scene.addChild(glassSphere);
-  scene.addChild(sphereNormal);
+  scene.addChild(sphereLight);
+  scene.addChild(planeLight);
 
   return { scene, camera };
 }
