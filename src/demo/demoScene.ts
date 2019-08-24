@@ -13,10 +13,9 @@ import { ColorTexture } from 'src/texture/ColorTexture';
 import { NoiseTexture } from 'src/texture/NoiseTexture';
 import { ImageTexture } from 'src/texture/ImageTexture';
 import { SimpleImage } from 'src/SimpleImage';
-import earthImageAsset from 'src/demo/earth-map2.png';
+import earthImageAsset from 'src/demo/earth-map.jpg';
 import marsImageAsset from 'src/demo/mars-map.jpg';
 import { CheckerTexture } from 'src/texture/CheckerTexture';
-import { EmissionMaterial } from 'src/material/EmissionMaterial';
 
 const setupPlaceOnSurface = ({ surfaceCenter, surfaceRadius }) => ({ from, sphereRadius }) => {
   return placeSphereOnSurfaceFromPosition({ from, surfaceCenter, sphereRadius, surfaceRadius });
@@ -52,7 +51,8 @@ export async function create({ aspectRatio, width, height }) {
   const sphere2 = new Sphere({
     center: placeOnGround({ from: new Vector3(3, 3, -12), sphereRadius: 1 }),
     radius: 1.0,
-    material: new EmissionMaterial({ albedo: new ColorTexture(new Color(1,1,1)), brightness: 200 }),
+    // material: new LambertMaterial({ albedo: new ColorTexture(new Color(random(), random(), random())) }),
+    material: new LambertMaterial({ albedo: new ImageTexture(await SimpleImage.load(earthImageAsset)) }),
   });
   const glassSphere = new Sphere({
     center: placeOnGround({ from: new Vector3(1, 0, -10), sphereRadius: 1.5 }),
