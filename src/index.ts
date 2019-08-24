@@ -15,9 +15,9 @@ async function render({ canvas, ui, renderBlock }) {
   const height = canvas.height;
   const aspectRatio = width / height;
 
-  // const { scene, camera } = await createDemoScene({ aspectRatio, width, height });
+  const { scene, camera } = await createDemoScene({ aspectRatio, width, height });
   // const { scene, camera } = await createTestScene({ aspectRatio, width, height });
-  const { scene, camera } = await createBookCoverScene({ aspectRatio, width, height });
+  // const { scene, camera } = await createBookCoverScene({ aspectRatio, width, height });
   const renderer = new Renderer({ canvas, camera, scene });
 
   const renderProgress = new RenderProgress({ element: ui, block: renderBlock });
@@ -28,8 +28,8 @@ async function render({ canvas, ui, renderBlock }) {
     onComplete: () => renderProgress.complete(),
   });
 
-  const renderProperties = { antialias: { numSamples: 10, blurRadius: .5, isUniform: false }, quality: 20, resolution: 1 }
-  // const renderProperties = { quality: 10, resolution: 1 }
+  // const renderProperties = { antialias: { numSamples: 5, blurRadius: 1, isUniform: false }, quality: 100, resolution: 1 }
+  const renderProperties = { quality: 20, resolution: 1 }
 
   renderSingle({ canvas,  renderer, renderProperties });
 

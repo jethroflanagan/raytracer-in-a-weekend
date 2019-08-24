@@ -105,17 +105,21 @@ export class Renderer {
 
       if (volume.material) {
         const { u, v } = volume.getUV(intersection.point);
-        const { attenuation, bounceRay } = volume.material.bounce({ ray, intersection, u, v });
-        if (bounceRay) {
-          color = this.getColorForRay(bounceRay, depth + 1)//.toVector().multiply(attenuation.toVector()).toColor();
-          return color.toVector().multiply(attenuation.toVector()).toColor();
+        let { attenuation, bounceRay, emission } = volume.material.bounce({ ray, intersection, u, v });
+        if (!emission) {
+          emission = new Color(0,0,0);
         }
-        return attenuation;
+        if (bounceRay && attenuation) {
+          color = this.getColorForRay(bounceRay, depth + 1)//.toVector().multiply(attenuation.toVector()).toColor();
+          return color.toVector()
+            .multiply(attenuation.toVector())
+            .add(emission.toVector()).toColor();
+        }
+        return emission;
       }
-      // error
-      return new Color(1, 0, 0);
+      throw new Error('No material');
     }
-    return background.getColor(ray);
+    return new Color(0, 0, 0)//background.getColor(ray);
   }
 
   antialiasForXY(x: number, y: number, time: number, { numSamples = 10, blurRadius = 1, isUniform = false }: AntialiasOptions = <AntialiasOptions>{}): Color {
