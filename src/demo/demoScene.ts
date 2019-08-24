@@ -16,6 +16,7 @@ import { SimpleImage } from 'src/SimpleImage';
 import earthImageAsset from 'src/demo/earth-map.jpg';
 import marsImageAsset from 'src/demo/mars-map.jpg';
 import { CheckerTexture } from 'src/texture/CheckerTexture';
+import { EmissionMaterial } from 'src/material/EmissionMaterial';
 
 const setupPlaceOnSurface = ({ surfaceCenter, surfaceRadius }) => ({ from, sphereRadius }) => {
   return placeSphereOnSurfaceFromPosition({ from, surfaceCenter, sphereRadius, surfaceRadius });
@@ -62,7 +63,7 @@ export async function create({ aspectRatio, width, height }) {
   const sphereNormal = new Sphere({
     center: placeOnGround({ from: new Vector3(0, 0, -8), sphereRadius: .7 }),
     radius: .7,
-    material: new NormalMaterial({ allowShadows: true }),
+    material: new EmissionMaterial({ albedo: new ColorTexture(new Color(1,1,1)), brightness: 10 }),
   });
 
   // const cameraOrigin = new Vector3(5,1,0);
