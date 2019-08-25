@@ -64,6 +64,7 @@ export class Plane implements Volume {
       normal: this.flipNormals ? normal.multiply(-1) : normal,
       u: (a - a0) / (a1 - a0),
       v: (b - b0) / (b1 - b0),
+      material: this.material,
     }
     return intersection;
   }

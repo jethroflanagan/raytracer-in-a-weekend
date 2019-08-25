@@ -6,7 +6,6 @@ import { Intersection } from 'src/Intersection';
 import { AABB } from './AABB';
 
 export class Sphere implements Volume {
-
   center: Vector3;
   radius: number;
   material: Material;
@@ -51,6 +50,7 @@ export class Sphere implements Volume {
         normal: point.subtract(this.center).divide(this.radius),
         u,
         v,
+        material: this.material,
       };
     }
 
