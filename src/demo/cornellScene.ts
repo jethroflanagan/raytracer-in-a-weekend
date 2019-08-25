@@ -8,6 +8,8 @@ import { Vector3 } from 'src/Vector';
 import { Plane } from 'src/volume/Plane';
 import { LambertMaterial } from 'src/material/LambertMaterial';
 import { Sphere } from 'src/volume/Sphere';
+import { MetalMaterial } from 'src/material/MetalMaterial';
+import { DialectricMaterial } from 'src/material/DialectricMaterial';
 
 export async function create({ aspectRatio, width, height }) {
   const scene = new Scene();
@@ -15,7 +17,9 @@ export async function create({ aspectRatio, width, height }) {
   const greenMaterial = new LambertMaterial({ albedo: new ColorTexture(new Color(.12,.45,.15)) });
   const redMaterial = new LambertMaterial({ albedo: new ColorTexture(new Color(.65,.05,.05)) });
   const whiteMaterial = new LambertMaterial({ albedo: new ColorTexture(new Color(.73,.73,.73)) });
-  const lightMaterial = new EmissionMaterial({ albedo: new ColorTexture(new Color(1,1,1)), brightness: 15 }),
+  const metalMaterial = new MetalMaterial({ albedo: new ColorTexture(new Color(1,1,1)) });
+  const glassMaterial = new DialectricMaterial({ albedo: new ColorTexture(new Color(1,1,1)) });
+  const lightMaterial = new EmissionMaterial({ albedo: new ColorTexture(new Color(1,1,1)), brightness: 15 });
 
   const size = 555;
   const halfSize = size / 2;
@@ -40,14 +44,14 @@ export async function create({ aspectRatio, width, height }) {
     material: whiteMaterial,
   });
 
-  const lightSize = 100;
+  const lightSize = 180;
   const light = new Plane({ a0: halfSize - lightSize, a1: halfSize + lightSize, b0: halfSize - lightSize, b1: halfSize + lightSize, k: size - 1, axis: 'y',
     material: lightMaterial,
   });
   // const sphereLight = new Sphere({
   //   center: new Vector3(halfSize, halfSize, halfSize),
-  //   radius: 100,
-  //   material: new EmissionMaterial({ albedo: new ColorTexture(new Color(1,1,1)), brightness: 5 }),
+  //   radius: 40,
+  //   material: new EmissionMaterial({ albedo: new ColorTexture(new Color(1,1,1)), brightness: 15 }),
   // });
 
   const sphereSize = 110;
@@ -55,6 +59,13 @@ export async function create({ aspectRatio, width, height }) {
     center: new Vector3(halfSize * 1.5, sphereSize, halfSize * .4),
     radius: sphereSize,
     material: whiteMaterial,
+  });
+
+  const sphere2Size = 150;
+  const sphere2 = new Sphere({
+    center: new Vector3(halfSize * .8, sphere2Size, halfSize * 1.4),
+    radius: sphere2Size,
+    material: glassMaterial,
   });
 
   const cameraOrigin = new Vector3(halfSize, halfSize, -size * 1.4);
@@ -77,8 +88,10 @@ export async function create({ aspectRatio, width, height }) {
   scene.addChild(planeBottom);
   scene.addChild(planeBack);
   // scene.addChild(planeFront);
-  scene.addChild(light);
   scene.addChild(sphere);
+  scene.addChild(sphere2);
+  scene.addChild(light);
+  // scene.addChild(sphereLight);
 
   return { scene, camera };
 }

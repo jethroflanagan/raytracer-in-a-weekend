@@ -30,8 +30,8 @@ async function render({ canvas, ui, renderBlock }) {
     onComplete: () => renderProgress.complete(),
   });
 
-  // const renderOptions = { antialias: { numSamples: 10, blurRadius: .5, isUniform: false }, quality: 200, resolution: 1, maxRayDepth: 100 }
-  const renderOptions = { quality: 20, resolution: 1, maxRayDepth: 10 }
+  // const renderOptions = { antialias: { numSamples: 5, blurRadius: .5, isUniform: false }, quality: 200, resolution: 1, maxRayDepth: 100 }
+  const renderOptions = { quality: 100, resolution: 1, maxRayDepth: 10 }
 
   renderSingle({ canvas,  renderer, renderOptions });
 
