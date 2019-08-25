@@ -9,7 +9,6 @@ import { random } from './utils/math';
 
 const T_MIN = .001;
 const T_MAX = Infinity;
-const MAX_RAY_DEPTH = 100;
 const noop = function () {};
 
 export type AntialiasOptions = {
@@ -24,6 +23,7 @@ export type RenderOptions = {
   blockSize?: number,
   resolution?: number, // 0.1 -> 5+ (width,height multiplier)
   time?: number,
+  maxRayDepth?: number,
   timeIncrement?: number, // time increments for camera shutter open time
 };
 
@@ -83,25 +83,16 @@ export class Renderer {
     return v.toColor();
   }
 
-  getColorForRay(ray: Ray, depth: number = 0): Color {
+  getColorForRay({ ray, depth = 0, maxRayDepth }: { ray: Ray, depth?: number, maxRayDepth: number }): Color {
     const { scene } = this;
     const { background } = scene;
 
     const { intersection, volume } = scene.hit(ray, T_MIN, T_MAX);
     if (intersection != null) {
       let color: Color = null;
-      if (depth >= MAX_RAY_DEPTH) {
+      if (depth >= maxRayDepth) {
         return new Color(0, 0, 0);
       }
-      // color = this.shadeNormal({ intersection, volume });return color;
-      // const origin = intersection.point;
-      // const target = origin.add(intersection.normal).add(Vector3.randomDirection());
-      // const direction = target.subtract(origin);
-
-      // let colorV: Vector3 = colorToVector(this.getColorForRay(new Ray(origin, direction)));
-      // colorV = colorV.multiply(.5)
-      //   // .add(colorToVector(color).multiply(.5));
-      // color = vectorToColor(colorV);
 
       if (volume.material) {
         const { u, v } = intersection;
@@ -110,7 +101,7 @@ export class Renderer {
           emission = new Color(0,0,0);
         }
         if (bounceRay && attenuation) {
-          color = this.getColorForRay(bounceRay, depth + 1)//.toVector().multiply(attenuation.toVector()).toColor();
+          color = this.getColorForRay({ ray: bounceRay, depth: depth + 1, maxRayDepth })//.toVector().multiply(attenuation.toVector()).toColor();
           return color.toVector()
             .multiply(attenuation.toVector())
             .add(emission.toVector()).toColor();
@@ -119,20 +110,22 @@ export class Renderer {
       }
       throw new Error('No material');
     }
-    return new Color(0, 0, 0)//background.getColor(ray);
+    return background ? background.getColor(ray) : new Color(0, 0, 0);
   }
 
-  antialiasForXY(x: number, y: number, time: number, { numSamples = 10, blurRadius = 1, isUniform = false }: AntialiasOptions = <AntialiasOptions>{}): Color {
-    let colorV: Vector3 = new Vector3(0, 0, 0);
+  antialiasForXY({ x, y, time, antialias, maxRayDepth }: { x: number, y: number, time: number, antialias: AntialiasOptions, maxRayDepth: number }): Color {
+    const { numSamples = 10, blurRadius = 1, isUniform = false } = antialias;
 
+    let colorV: Vector3 = new Vector3(0, 0, 0);
     for (let s = 0; s < numSamples; s++) {
       const angleVal = isUniform ? s / numSamples : random();
       const sampleAngle = angleVal * Math.PI * 2;
-      const resultV: Color = this.getColorForXY(
-        (x + Math.cos(sampleAngle) * blurRadius),
-        (y + Math.sin(sampleAngle) * blurRadius),
+      const resultV: Color = this.getColorForXY({
+        x: (x + Math.cos(sampleAngle) * blurRadius),
+        y: (y + Math.sin(sampleAngle) * blurRadius),
         time,
-      );
+        maxRayDepth,
+      });
       colorV = new Vector3(resultV.r, resultV.g, resultV.b).add(colorV);
     }
     colorV = colorV.divide(numSamples);
@@ -143,20 +136,33 @@ export class Renderer {
     return new Vector3(Math.sqrt(color.r), Math.sqrt(color.g), Math.sqrt(color.b)).toColor();
   }
 
-  getColorForXY(x: number, y: number, time: number): Color {
+  getColorForXY({ x, y, time, maxRayDepth }: { x: number, y: number, time: number, maxRayDepth: number }): Color {
     const { width, height, camera } = this;
     const u = x / width;
     const v = y / height;
     const ray = camera.getRay(u, v, time);
-    return this.getColorForRay(ray);
+    return this.getColorForRay({ ray, maxRayDepth });
+  }
+
+  // render blocks from center
+  getRenderPattern({ width, height, blockSize }) {
+    // distance from the middle of block
+    const getDist = (x, y) => Math.sqrt( (x + (blockSize - width) / 2) ** 2 + (y + (blockSize - height) / 2) ** 2 );
+    const order = [];
+    for (let y: number = 0; y < height; y += blockSize) {
+      for (let x: number = 0; x < width; x += blockSize) {
+        order.push({ x, y, distance: getDist(x, y) });
+      }
+    };
+    order.sort((a,b) => a.distance - b.distance);
+
+    return order;
   }
 
   // TODO: make timeIncrement correctly divide into shutterOpenTime (misses last render)
-  render = async ({ antialias = null, quality = 1, blockSize = 50, resolution = 1, time = 0, timeIncrement = 100 }: RenderOptions = <RenderOptions>{}) => {
+  render = async ({ antialias = null, quality = 1, blockSize = 50, resolution = 1, time = 0, timeIncrement, maxRayDepth = 100 }: RenderOptions = {}) => {
     const renderStart = performance.now();
     this.onStart();
-
-    const { scene } = this;
 
     const { ctx, canvas, width, height } = this;
 
@@ -173,22 +179,14 @@ export class Renderer {
       canvas.setAttribute('style', '');
     }
 
-    // render blocks from center
-    const getDist = (x, y) => Math.sqrt( (x - width / 2) ** 2 + (y - height / 2) ** 2 );
-    const position = [];
-    for (let y: number = 0; y < height; y += blockSize) {
-      for (let x: number = 0; x < width; x += blockSize) {
-        position.push({ x, y, distance: getDist(x, y) });
-      }
-    };
-    position.sort((a,b) => a.distance - b.distance);
+    const order = this.getRenderPattern({ width, height, blockSize });
 
     // console.log(time, this.scene.camera.shutterOpenTime, timeIncrement);
 
     // render for time
     // TODO: store buffers for next from and `shift()` as the time moves ahead
     // TODO: (OPTIMIZATION) only re-render buffers that contain an object being animated
-    const blendingBlocks = new Array(position.length).fill([], 0, position.length); // used to blend blocks together
+    const blendingBlocks = new Array(order.length).fill([], 0, order.length); // used to blend blocks together
     let blendIndex = 0;
 
     // Need to run loops in this order so easing (scene.updateTime) only occurs once instead of repeating the ease calcs per renderBlock
@@ -198,9 +196,9 @@ export class Renderer {
       const sceneTime = currentTime;
       this.scene.updateTime(sceneTime);
       const activeBlendList = blendingBlocks[blendIndex];
-      for (let i: number = 0; i < position.length; i++) {
-        const { x, y } = position[i];
-        const block = await this.renderBlock({ x, y, width: blockSize, height: blockSize }, { antialias, quality, resolution, time: sceneTime });
+      for (let i: number = 0; i < order.length; i++) {
+        const { x, y } = order[i];
+        const block = await this.renderBlock({ x, y, width: blockSize, height: blockSize }, { antialias, quality, resolution, time: sceneTime, maxRayDepth });
 
         if (activeBlendList[i] == null) {
           activeBlendList[i] = [];
@@ -220,7 +218,7 @@ export class Renderer {
         //   ['blocks', i / position.length ],
         //   ['motion blur', (currentTime - startTime) / (endTime - startTime) ],
         // ]);
-        this.onProgress('block', i / position.length);
+        this.onProgress('block', i / order.length);
       }
       this.onProgress('block', 1);
       this.onProgress('all', (currentTime - startTime) / (endTime - startTime));
@@ -229,7 +227,7 @@ export class Renderer {
     this.onComplete();
     console.log('render time: ' + (performance.now() - renderStart));
 
-    // allow async/await for renderer
+    // allow async/await for renderer or it becomes blocking
     return new Promise(resolve => setTimeout(resolve));
   }
 
@@ -251,9 +249,9 @@ export class Renderer {
     return new ImageData(data, buffers[0].width, buffers[0].height);
   }
 
-  renderBlock(area: { x, y, width, height }, { antialias, quality, resolution, time }): Promise<{ renderBuffer: ImageData, x: number, y: number }> {
+  renderBlock(area: { x, y, width, height }, { antialias, quality, resolution, time, maxRayDepth }): Promise<{ renderBuffer: ImageData, x: number, y: number }> {
     // const renderStart = performance.now();
-    const { ctx, width, height } = this;
+    const { height } = this;
     const blockX = area.x * resolution;
     const blockY = area.y * resolution;
     const blockWidth = area.width * resolution;
@@ -261,8 +259,8 @@ export class Renderer {
     const renderBuffer = this.ctx.createImageData(blockWidth, blockHeight);
 
     const renderXY = antialias
-      ? (x, y) => this.antialiasForXY(x, y, time, { ...antialias })
-      : (x, y) => this.getColorForXY(x, y, time);
+      ? (x, y) => this.antialiasForXY({ x, y, time, antialias, maxRayDepth })
+      : (x, y) => this.getColorForXY({ x, y, time, maxRayDepth });
 
     for (let y: number = blockY; y < blockY + blockHeight; y++) {
       for (let x: number = blockX; x < blockX + blockHeight; x++) {
@@ -275,7 +273,7 @@ export class Renderer {
         }
         color = colorPasses.divide(quality).toColor();
 
-        // color = this.correctGamma(color);
+        color = this.correctGamma(color);
 
         // TODO: do this conversion, ensure right side up
         this.setPixel({ x: (x - blockX), y: (blockY + blockHeight - 1 - y), color, renderBuffer, width: blockWidth });
@@ -285,7 +283,6 @@ export class Renderer {
     const p: Promise<any> = new Promise(resolve => {
       // needs to be setTimeout to prevent the putImageData from locking up the processor
       setTimeout(() => {
-        // ctx.putImageData(renderBuffer, area.x * resolution, (height - area.y - area.height)  * resolution);
         resolve({
           renderBuffer,
           x: area.x * resolution,

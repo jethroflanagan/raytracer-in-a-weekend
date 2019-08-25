@@ -30,12 +30,12 @@ async function render({ canvas, ui, renderBlock }) {
     onComplete: () => renderProgress.complete(),
   });
 
-  const renderProperties = { antialias: { numSamples: 5, blurRadius: 1, isUniform: false }, quality: 100, resolution: 1 }
-  // const renderProperties = { quality: 20, resolution: 1 }
+  // const renderOptions = { antialias: { numSamples: 10, blurRadius: .5, isUniform: false }, quality: 200, resolution: 1, maxRayDepth: 100 }
+  const renderOptions = { quality: 20, resolution: 1, maxRayDepth: 10 }
 
-  renderSingle({ canvas,  renderer, renderProperties });
+  renderSingle({ canvas,  renderer, renderOptions });
 
-  // renderSequence({ canvas, renderer, renderProperties });
+  // renderSequence({ canvas, renderer, renderOptions });
 
   // testBvh({ scene, camera, renderer });
 }
@@ -54,26 +54,16 @@ function testBvh({ scene, camera, renderer }) {
 
 }
 
-function renderSingle({ canvas, renderer, renderProperties }) {
-    // const renderProgress = new RenderProgress({ element: ui, block: renderBlock });
-
-
-  // renderer.render({
-  //   antialias: { numSamples: 5, blurRadius: .5, isUniform: false },
-  //   quality: 3,
-  //   resolution: 1,
-  //   time: 500, timeIncrement: 20,
-  // });
-
-  renderer.render({ ...renderProperties, time: 0, timeIncrement: 50 });
+function renderSingle({ canvas, renderer, renderOptions }) {
+  renderer.render({ ...renderOptions, time: 0, timeIncrement: 50 });
 }
 
-async function renderSequence({ canvas, renderer, renderProperties }) {
+async function renderSequence({ canvas, renderer, renderOptions }) {
   const numFrames = 10;
   const fps = 24;
   const frameTime = 1000 / fps;
   for (let frame = 0; frame < numFrames; frame++) {
-    await renderer.render({ ...renderProperties, time: 0 + frame * frameTime, timeIncrement: frameTime });
+    await renderer.render({ ...renderOptions, time: 0 + frame * frameTime, timeIncrement: frameTime });
 
     const frameCanvas = document.createElement('canvas');
     const el = document.getElementById('frames');
