@@ -36,11 +36,11 @@ function createCornellBox({ size, extendSize }) {
   // });
 
   return [
-    // planeLeft,
-    // planeRight,
-    // planeTop,
+    planeLeft,
+    planeRight,
+    planeTop,
     planeBottom,
-    // planeBack,
+    planeBack,
     // planeFront,
   ];
 }
@@ -48,7 +48,8 @@ function createCornellBox({ size, extendSize }) {
 export async function create({ aspectRatio, width, height }) {
   const scene = new Scene();
 
-  const whiteMaterial = new LambertMaterial({ albedo: new ColorTexture(new Color(.73, .1, .73)) });
+  const whiteMaterial = new LambertMaterial({ albedo: new ColorTexture(new Color(.73, .73, .73)) });
+  const boxMaterial = new LambertMaterial({ albedo: new ColorTexture(new Color(.73, .73, .73)) });
   const metalMaterial = new MetalMaterial({ albedo: new ColorTexture(new Color(1,1,1)) });
   const glassMaterial = new DialectricMaterial({ albedo: new ColorTexture(new Color(1,1,1)) });
   const lightMaterial = new EmissionMaterial({ albedo: new ColorTexture(new Color(1,1,1)), brightness: 15 });
@@ -59,7 +60,10 @@ export async function create({ aspectRatio, width, height }) {
 
   const boxSides = createCornellBox({ size, extendSize });
 
-  const box = new Box({ p0: new Vector3(130, 0, 165), p1: new Vector3(295, 65, 230),  material: whiteMaterial });
+  const boxDimensions = new Vector3(150, 300, 100);
+  const box2Dimensions = new Vector3(200, 80, 200);
+  const box = new Box({ center: new Vector3(halfSize * .75, boxDimensions.y / 2, halfSize * 1.3), dimensions: boxDimensions,  material: boxMaterial });
+  const box2 = new Box({ center: new Vector3(halfSize * .3, box2Dimensions.y / 2, halfSize * 1.1), dimensions: box2Dimensions,  material: boxMaterial });
 
   const lightSize = 180;
   const light = new Plane({ a0: halfSize - lightSize, a1: halfSize + lightSize, b0: halfSize - lightSize, b1: halfSize + lightSize, k: size - 1, axis: 'y',
@@ -72,17 +76,24 @@ export async function create({ aspectRatio, width, height }) {
   });
 
   const sphereSize = 110;
+  const box3Dimensions = new Vector3(250, 60, 250);
+  const box3Center = new Vector3(halfSize * 1.5, box3Dimensions.y / 2, halfSize * .1);
   const sphere = new Sphere({
-    center: new Vector3(halfSize * 1.5, sphereSize, halfSize * .4),
+    center: new Vector3(box3Center.x, sphereSize + box3Dimensions.y, box3Center.z),
     radius: sphereSize,
-    material: whiteMaterial,
+    material: glassMaterial,
+  });
+  const box3 = new Box({
+    center: box3Center,
+    dimensions: box3Dimensions,
+    material: boxMaterial
   });
 
-  const sphere2Size = 150;
+  const sphere2Size = 80;
   const sphere2 = new Sphere({
-    center: new Vector3(halfSize * .8, sphere2Size, halfSize * 1.4),
+    center: box.center.add(new Vector3(0, box.dimensions.y / 2 + sphere2Size, 0)),
     radius: sphere2Size,
-    material: metalMaterial,
+    material: whiteMaterial,
   });
 
   const cameraOrigin = new Vector3(halfSize, halfSize, -size * 1.4);
@@ -101,10 +112,12 @@ export async function create({ aspectRatio, width, height }) {
   scene.setActiveCamera(camera);
   boxSides.forEach(side => scene.addChild(side));
   scene.addChild(sphere);
-  // scene.addChild(sphere2);
+  scene.addChild(sphere2);
   scene.addChild(box);
+  scene.addChild(box2);
+  scene.addChild(box3);
   scene.addChild(light);
-  scene.addChild(sphereLight);
+  // scene.addChild(sphereLight);
 
   return { scene, camera };
 }

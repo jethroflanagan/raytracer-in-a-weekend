@@ -31,7 +31,7 @@ async function render({ canvas, ui, renderBlock }) {
   });
 
   // const renderOptions = { antialias: { numSamples: 5, blurRadius: .5, isUniform: false }, quality: 200, resolution: 1, maxRayDepth: 100 }
-  const renderOptions = { quality: 100, resolution: .5, maxRayDepth: 5 }
+  const renderOptions = { quality: 20, resolution: 1, maxRayDepth: 5 }
 
   renderSingle({ canvas,  renderer, renderOptions });
 

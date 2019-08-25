@@ -14,28 +14,41 @@ export class Box implements Volume {
   sides: Volume[];
   p0: Vector3;
   p1: Vector3;
+  center: Vector3;
+  dimensions: any;
 
-  constructor({ p0, p1, material }: { p0: Vector3, p1: Vector3, material: Material }) {
+  constructor({ center, dimensions, material }: { center: Vector3, dimensions: Vector3, material: Material }) {
+    if (dimensions.min() < 0) {
+      throw new Error('Dimensions must be positive');
+    }
+    const halfDimensions = dimensions.divide(2);
+    const p0 = center.subtract(halfDimensions);
+    const p1 = center.add(halfDimensions);
+
     this.p0 = p0;
     this.p1 = p1;
+    this.center = center;
+    this.dimensions = dimensions;
 
-    const debugMaterial = new LambertMaterial({ albedo: new ColorTexture(new Color(.1, .1, 1)) });
     const sides = [];
-
     // back
-    sides.push(new Plane({ a0: p0.x, a1: p1.x, b0: p0.y, b1: p1.y, k: p0.z, axis: 'z', flipNormals: true, material }));
-    // front
-    sides.push(new Plane({ a0: p0.x, a1: p1.x, b0: p0.y, b1: p0.y, k: p1.z, axis: 'z', material }));
+    sides.push(new Plane({ a0: p0.x, a1: p1.x, b0: p0.y, b1: p1.y, k: p0.z, axis: 'z', material }));
 
+    // TODO: work out why order matters. Might be a render bug elsewhere
     // top
-    sides.push(new Plane({ a0: p0.x, a1: p1.x, b0: p0.z, b1: p1.z, k: p1.y, axis: 'y', flipNormals: true, material }));
-    // bottom
-    sides.push(new Plane({ a0: p0.x, a1: p1.x, b0: p0.z, b1: p1.z, k: p0.y, axis: 'y', material }));
+    sides.push(new Plane({ a0: p0.x, a1: p1.x, b0: p0.z, b1: p1.z, k: p1.y, axis: 'y', material }));
 
     // left
-    sides.push(new Plane({ a0: p0.y, a1: p1.y, b0: p0.z, b1: p1.z, k: p1.x, axis: 'x', flipNormals: true, material }));
+    sides.push(new Plane({ a0: p0.y, a1: p1.y, b0: p0.z, b1: p1.z, k: p1.x, axis: 'x', material }));
+
     // right
-    sides.push(new Plane({ a0: p0.y, a1: p1.y, b0: p0.z, b1: p1.z, k: p0.x, axis: 'x', material }));
+    sides.push(new Plane({ a0: p0.y, a1: p1.y, b0: p0.z, b1: p1.z, k: p0.x, axis: 'x', flipNormals: true, material }));
+
+    // front
+    sides.push(new Plane({ a0: p0.x, a1: p1.x, b0: p0.y, b1: p0.y, k: p1.z, axis: 'z', flipNormals: true, material }));
+
+    // bottom
+    sides.push(new Plane({ a0: p0.x, a1: p1.x, b0: p0.z, b1: p1.z, k: p0.y, axis: 'y', flipNormals: true, material }));
 
     this.sides = sides;
     this.material = material;
@@ -55,15 +68,6 @@ export class Box implements Volume {
   getBoundingBox(t0: number, t1: number): AABB {
     const { p0, p1 } = this;
     return new AABB(p0, p1);
-  }
-
-  get center(): Vector3 {
-    // const { p0, p1 } = this;
-    // return new Vector3(
-    //   (a1 - a0) / 2 + a0,
-    //   (b1 - b0) / 2 + b0,
-    //   k
-    // );
   }
 
 }
