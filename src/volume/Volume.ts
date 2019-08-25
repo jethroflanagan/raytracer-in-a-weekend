@@ -6,6 +6,7 @@ import { Vector3 } from 'src/Vector';
 
 export interface Volume {
   material?: Material;
+  center: Vector3;
 
   hit(ray: Ray, tMin: number, tMax: number): Intersection;
 

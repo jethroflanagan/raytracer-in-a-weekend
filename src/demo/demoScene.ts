@@ -17,7 +17,7 @@ import earthImageAsset from 'src/demo/earth-map.jpg';
 import marsImageAsset from 'src/demo/mars-map.jpg';
 import { CheckerTexture } from 'src/texture/CheckerTexture';
 import { EmissionMaterial } from 'src/material/EmissionMaterial';
-import { Plane } from 'src/volume/Plane';
+import { Plane, Orientation } from 'src/volume/Plane';
 
 const setupPlaceOnSurface = ({ surfaceCenter, surfaceRadius }) => ({ from, sphereRadius }) => {
   return placeSphereOnSurfaceFromPosition({ from, surfaceCenter, sphereRadius, surfaceRadius });
@@ -67,13 +67,18 @@ export async function create({ aspectRatio, width, height }) {
     material: new EmissionMaterial({ albedo: new ColorTexture(new Color(1,1,1)), brightness: 5 }),
   });
 
-  const planeLight = new Plane({ x0: 2, x1: 5, y0: -1, y1: 2, k: -15,
+  const planeLight = new Plane({ a0: 2, a1: 5, b0: -1, b1: 2, k: -15, axis: 'z',
     material: new EmissionMaterial({ albedo: new ColorTexture(new Color(1,1,1)), brightness: 5 }),
   });
 
+  const planeLight2 = new Plane({ a0: 0, a1: 7, b0: -10, b1: 10, k: -12, axis: 'z',
+    material: new EmissionMaterial({ albedo: new ColorTexture(new Color(1,1,1)), brightness: 5 }),
+  });
+
+
   // const cameraOrigin = new Vector3(5,1,0);
   const cameraOrigin = new Vector3(5,0,0);
-  const cameraTarget = glassSphere.center;
+  const cameraTarget = planeLight.center;
   const focalDistance = cameraTarget.subtract(cameraOrigin).length();
   const camera: Camera = new Camera({
     origin: cameraOrigin,
@@ -89,11 +94,12 @@ export async function create({ aspectRatio, width, height }) {
   scene.setActiveCamera(camera);
   scene.addBackground(background);
   scene.addChild(ground);
-  scene.addChild(sphere);
-  scene.addChild(sphere2);
-  scene.addChild(glassSphere);
-  scene.addChild(sphereLight);
-  scene.addChild(planeLight);
+  // scene.addChild(sphere);
+  // scene.addChild(sphere2);
+  // scene.addChild(glassSphere);
+  // scene.addChild(sphereLight);
+  // scene.addChild(planeLight);
+  scene.addChild(planeLight2);
 
   return { scene, camera };
 }

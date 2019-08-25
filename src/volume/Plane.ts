@@ -7,32 +7,53 @@ import { AABB } from './AABB';
 
 export class Plane implements Volume {
   material: Material;
-  x0: number;
-  x1: number;
-  y0: number;
-  y1: number;
+  a0: number;
+  a1: number;
+  b0: number;
+  b1: number;
   k: number;
+  axis: 'x' | 'y' | 'z';
+  flipNormals: boolean;
 
-  constructor({ x0, x1, y0, y1, k, material }: { x0: number, x1: number, y0: number, y1: number, k: number, material: Material }) {
-    this.x0 = x0;
-    this.x1 = x1;
-    this.y0 = y0;
-    this.y1 = y1;
+  constructor({ a0, a1, b0, b1, k, axis, flipNormals = false, material }: { a0: number, a1: number, b0: number, b1: number, k: number, axis: 'x' | 'y' | 'z', flipNormals?: boolean, material: Material }) {
+    this.a0 = a0;
+    this.a1 = a1;
+    this.b0 = b0;
+    this.b1 = b1;
     this.k = k;
+    this.axis = axis;
+    this.flipNormals = flipNormals;
     this.material = material;
   }
 
   hit(ray: Ray, tMin: number, tMax: number): Intersection {
-    const { x0, y0, x1, y1, k } = this;
-    const t = (k - ray.origin.z) / ray.direction.z;
+    const { a0, b0, a1, b1, k, axis } = this;
+    const t = (k - ray.origin[axis]) / ray.direction[axis];
     if (t < tMin || t > tMax) {
       return null;
     }
+    let a = null;
+    let b = null;
+    let normal = null;
+    switch (axis) {
+      case 'x':
+        a = ray.origin.y + t * ray.direction.y;
+        b = ray.origin.z + t * ray.direction.z;
+        normal = new Vector3(1, 0, 0);
+        break;
+      case 'y':
+        a = ray.origin.x + t * ray.direction.x;
+        b = ray.origin.z + t * ray.direction.z;
+        normal = new Vector3(0, 1, 0);
+        break;
+      case 'z':
+        a = ray.origin.x + t * ray.direction.x;
+        b = ray.origin.y + t * ray.direction.y;
+        normal = new Vector3(0, 0, 1);
+        break;
+    }
 
-    const x = ray.origin.x + t * ray.direction.x;
-    const y = ray.origin.y + t * ray.direction.y;
-
-    if (x < x0 || x > x1 || y < y0 || y > y1) {
+    if (a < a0 || a > a1 || b < b0 || b > b1) {
       return null;
     }
 
@@ -40,19 +61,28 @@ export class Plane implements Volume {
     const intersection = <Intersection>{
       t,
       point,
-      normal: new Vector3(0, 0, 1),
-      u: (x - x0) / (x1 - x0),
-      v: (y - y0) / (y1 - y0),
+      normal: this.flipNormals ? normal.multiply(-1) : normal,
+      u: (a - a0) / (a1 - a0),
+      v: (b - b0) / (b1 - b0),
     }
     return intersection;
   }
 
   getBoundingBox(t0: number, t1: number): AABB {
     const halfDepth: number = 0.0001;
-    const { x0, y0, k } = this;
+    const { a0, b0, k } = this;
     return new AABB(
-      new Vector3(x0, y0, k - halfDepth),
-      new Vector3(x0, y0, k + halfDepth)
+      new Vector3(a0, b0, k - halfDepth),
+      new Vector3(a0, b0, k + halfDepth)
+    );
+  }
+
+  get center(): Vector3 {
+    const { a0, b0, a1, b1, k } = this;
+    return new Vector3(
+      (a1 - a0) / 2 + a0,
+      (b1 - b0) / 2 + b0,
+      k
     );
   }
 
