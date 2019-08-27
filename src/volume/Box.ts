@@ -8,6 +8,7 @@ import { Plane } from './Plane';
 import { LambertMaterial } from 'src/material/LambertMaterial';
 import { ColorTexture } from 'src/texture/ColorTexture';
 import { Color } from 'src/Color';
+import { flipNormals } from './modifier/flipNormals';
 
 export class Box implements Volume {
   material: Material;
@@ -42,13 +43,13 @@ export class Box implements Volume {
     sides.push(new Plane({ a0: p0.y, a1: p1.y, b0: p0.z, b1: p1.z, k: p1.x, axis: 'x', material }));
 
     // right
-    sides.push(new Plane({ a0: p0.y, a1: p1.y, b0: p0.z, b1: p1.z, k: p0.x, axis: 'x', flipNormals: true, material }));
+    sides.push(flipNormals(new Plane({ a0: p0.y, a1: p1.y, b0: p0.z, b1: p1.z, k: p0.x, axis: 'x', material })));
 
     // front
-    sides.push(new Plane({ a0: p0.x, a1: p1.x, b0: p0.y, b1: p0.y, k: p1.z, axis: 'z', flipNormals: true, material }));
+    sides.push(flipNormals(new Plane({ a0: p0.x, a1: p1.x, b0: p0.y, b1: p0.y, k: p1.z, axis: 'z', material })));
 
     // bottom
-    sides.push(new Plane({ a0: p0.x, a1: p1.x, b0: p0.z, b1: p1.z, k: p0.y, axis: 'y', flipNormals: true, material }));
+    sides.push(flipNormals(new Plane({ a0: p0.x, a1: p1.x, b0: p0.z, b1: p1.z, k: p0.y, axis: 'y', material })));
 
     this.sides = sides;
     this.material = material;

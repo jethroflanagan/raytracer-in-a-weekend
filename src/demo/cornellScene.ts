@@ -52,7 +52,7 @@ export async function create({ aspectRatio, width, height }) {
   const boxMaterial = new LambertMaterial({ albedo: new ColorTexture(new Color(.73, .73, .73)) });
   const metalMaterial = new MetalMaterial({ albedo: new ColorTexture(new Color(1,1,1)) });
   const glassMaterial = new DialectricMaterial({ albedo: new ColorTexture(new Color(1,1,1)) });
-  const lightMaterial = new EmissionMaterial({ albedo: new ColorTexture(new Color(1,1,1)), brightness: 15 });
+  const lightMaterial = new EmissionMaterial({ albedo: new ColorTexture(new Color(1,1,1)), brightness: 5 });
 
   const size = 555;
   const halfSize = size / 2;
