@@ -32,21 +32,24 @@ export class Box implements Volume {
     this.dimensions = dimensions;
 
     const sides = [];
-    // back
-    sides.push(new Plane({ a0: p0.x, a1: p1.x, b0: p0.y, b1: p1.y, k: p0.z, axis: 'z', material }));
 
     // TODO: work out why order matters. Might be a render bug elsewhere
     // top
     sides.push(new Plane({ a0: p0.x, a1: p1.x, b0: p0.z, b1: p1.z, k: p1.y, axis: 'y', material }));
 
-    // left
-    sides.push(new Plane({ a0: p0.y, a1: p1.y, b0: p0.z, b1: p1.z, k: p1.x, axis: 'x', material }));
+    // front
+    sides.push(new Plane({ a0: p0.x, a1: p1.x, b0: p0.y, b1: p1.y, k: p1.z, axis: 'z', material }));
 
     // right
+    sides.push(new Plane({ a0: p0.y, a1: p1.y, b0: p0.z, b1: p1.z, k: p1.x, axis: 'x', material }));
+
+    // back
+    sides.push(flipNormals(new Plane({ a0: p0.x, a1: p1.x, b0: p0.y, b1: p1.y, k: p0.z, axis: 'z', material })));
+
+
+    // left
     sides.push(flipNormals(new Plane({ a0: p0.y, a1: p1.y, b0: p0.z, b1: p1.z, k: p0.x, axis: 'x', material })));
 
-    // front
-    sides.push(flipNormals(new Plane({ a0: p0.x, a1: p1.x, b0: p0.y, b1: p0.y, k: p1.z, axis: 'z', material })));
 
     // bottom
     sides.push(flipNormals(new Plane({ a0: p0.x, a1: p1.x, b0: p0.z, b1: p1.z, k: p0.y, axis: 'y', material })));
@@ -56,14 +59,17 @@ export class Box implements Volume {
   }
 
   hit(ray: Ray, tMin: number, tMax: number): Intersection {
+    let minIntersection: Intersection = null;
     for (let i = 0, len = this.sides.length; i < len; i++) {
       let side = this.sides[i];
       const intersection = side.hit(ray, tMin, tMax);
       if (intersection) {
-        return intersection;
+        if (!minIntersection || intersection.t < minIntersection.t) {
+          minIntersection = intersection;
+        }
       }
     }
-    return null;
+    return minIntersection;
   }
 
   getBoundingBox(t0: number, t1: number): AABB {
