@@ -16,6 +16,7 @@ import { ImageTexture } from 'src/texture/ImageTexture';
 import { SimpleImage } from 'src/SimpleImage';
 import marsImageAsset from 'src/demo/earth-map2.jpg';
 import { NoiseTexture } from 'src/texture/NoiseTexture';
+import { EmissionMaterial } from 'src/material/EmissionMaterial';
 
 const setupPlaceOnSurface = ({ surfaceCenter, surfaceRadius }) => ({ from, sphereRadius }) => {
   return placeSphereOnSurfaceFromPosition({ from, surfaceCenter, sphereRadius, surfaceRadius });
@@ -26,7 +27,7 @@ export async function create({ aspectRatio, width, height }) {
   const scene = new Scene();
 
   const background = new FlatBackground();
-  scene.addBackground(background);
+  // scene.addBackground(background);
 
   const groundCenter = new Vector3(0, -1000, 0);
   const groundSize = 1000;
@@ -50,11 +51,11 @@ export async function create({ aspectRatio, width, height }) {
   const areaStart = 4;
   const getMaterial = () => {
     const pick = random();
-    if (pick < .75) {
+    if (pick < .35) {
         return new LambertMaterial({ albedo: new ColorTexture(new Color(random(), random(), random())) });
     }
     // if (pick < .7) {
-        return new MetalMaterial({ albedo: new Color(random(), random(), random()), reflectance: 1, fuzziness: 0 });
+        return new MetalMaterial({ albedo: new ColorTexture(new Color(random(), random(), random())), reflectance: 1, fuzziness: 0 });
     // }
     // return new NormalMaterial();
   }
@@ -69,23 +70,31 @@ export async function create({ aspectRatio, width, height }) {
   const bigSphere2 = new Sphere({
     center: placeOnGround({ from: new Vector3(2, 3, -22), sphereRadius: bigSize }),
     radius: bigSize,
-    material: new MetalMaterial({ albedo: new Color(1,.9,1), reflectance: 1, fuzziness: 0 }),
+    material: new MetalMaterial({ albedo: new ColorTexture(new Color(1,.9,1)), reflectance: 1, fuzziness: 0 }),
   });
 
   const bigSphere3 = new Sphere({
     center: placeOnGround({ from: new Vector3(6, 3, -27), sphereRadius: bigSize }),
     radius: bigSize,
-    material: new DialectricMaterial({ albedo: new Color(1,1,1), reflectance: 1, fuzziness: 0 }),
+    material: new DialectricMaterial({ albedo: new ColorTexture(new Color(1,1,1)), reflectance: 1, fuzziness: 0 }),
   });
   const bigSphere4 = new Sphere({
     center:  placeOnGround({ from: new Vector3(-1, 5, -17), sphereRadius: bigSize }).add(new Vector3(0, 3, 0)),
     radius: 1.3,
     material: new LambertMaterial({ albedo: new NoiseTexture({ scale: 1, turbulance: 6 }) }),
   });
+
+  const light = new Sphere({
+    center: placeOnGround({ from: new Vector3(2, 15, -22), sphereRadius: 1 }).add(new Vector3(0, 15, 0)),
+    radius: 3,
+    material: new EmissionMaterial({ albedo: new ColorTexture(new Color(1,1,1)), brightness: 25 }),
+  });
+
   scene.addChild(bigSphere1);
   scene.addChild(bigSphere2);
   scene.addChild(bigSphere3);
   scene.addChild(bigSphere4);
+  scene.addChild(light);
   positions.push({ position: bigSphere1.center, radius: bigSize });
   positions.push({ position: bigSphere2.center, radius: bigSize });
   positions.push({ position: bigSphere3.center, radius: bigSize });
@@ -121,7 +130,7 @@ export async function create({ aspectRatio, width, height }) {
     scene.addChild(sphere5);
   }
 
-  const cameraOrigin = new Vector3(0,10,5);
+  const cameraOrigin = new Vector3(0,14,5);
   const cameraTarget = bigSphere2.center;
   const focalDistance = cameraTarget.subtract(cameraOrigin).length();
   const camera: Camera = new Camera({

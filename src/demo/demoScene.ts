@@ -59,7 +59,7 @@ export async function create({ aspectRatio, width, height }) {
   const glassSphere = new Sphere({
     center: placeOnGround({ from: new Vector3(1, 0, -10), sphereRadius: 1.5 }),
     radius: 1.5,
-    material: new DialectricMaterial({ refractiveIndex: 1.4 }),
+    material: new DialectricMaterial({ albedo: new NoiseTexture({ scale: 1, turbulance: 3 }), refractiveIndex: 1.4 }),
   });
   const sphereLight = new Sphere({
     center: placeOnGround({ from: new Vector3(0, 0, -8), sphereRadius: .7 }),
@@ -71,9 +71,7 @@ export async function create({ aspectRatio, width, height }) {
     material: new EmissionMaterial({ albedo: new ColorTexture(new Color(1,1,1)), brightness: 5 }),
   });
 
-  const planeLight2 = new Plane({ a0: 0, a1: 7, b0: -10, b1: 10, k: -12, axis: 'z',
-    material: new EmissionMaterial({ albedo: new ColorTexture(new Color(1,1,1)), brightness: 5 }),
-  });
+
 
 
   // const cameraOrigin = new Vector3(5,1,0);
@@ -94,12 +92,12 @@ export async function create({ aspectRatio, width, height }) {
   scene.setActiveCamera(camera);
   scene.addBackground(background);
   scene.addChild(ground);
-  // scene.addChild(sphere);
-  // scene.addChild(sphere2);
-  // scene.addChild(glassSphere);
+  scene.addChild(sphere);
+  scene.addChild(sphere2);
+  scene.addChild(glassSphere);
   // scene.addChild(sphereLight);
   // scene.addChild(planeLight);
-  scene.addChild(planeLight2);
+  // scene.addChild(planeLight2);
 
   return { scene, camera };
 }

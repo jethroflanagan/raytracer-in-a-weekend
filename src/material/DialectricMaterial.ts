@@ -5,6 +5,7 @@ import { Intersection } from 'src/Intersection';
 import { Material } from './Material';
 import { reflectVector } from './bounce/reflect-vector';
 import { refractVector } from './bounce/refract-vector';
+import { Texture } from 'src/texture/Texture';
 
 export const REFRACTIVE_INDEX_AIR = 1;
 export const REFRACTIVE_INDEX_GLASS = 1.5;
@@ -12,13 +13,13 @@ export const REFRACTIVE_INDEX_DIAMOND = 2.4;
 
 // TODO: chapter 9
 export class DialectricMaterial implements Material {
-  albedo: Color;
+  albedo: Texture;
   reflectance: number;
   fuzziness: number;
   refractiveIndex: number;
 
-  constructor({ albedo = new Color(1, 1, 1), reflectance = 1, fuzziness = 0, refractiveIndex = REFRACTIVE_INDEX_AIR }: {
-    albedo?: Color, reflectance?: number, fuzziness?: number, refractiveIndex?: number
+  constructor({ albedo = null, reflectance = 1, fuzziness = 0, refractiveIndex = REFRACTIVE_INDEX_AIR }: {
+    albedo: Texture, reflectance?: number, fuzziness?: number, refractiveIndex?: number
   }) {
     this.albedo = albedo;
     this.reflectance = reflectance;
@@ -34,7 +35,7 @@ export class DialectricMaterial implements Material {
   }
 
   bounce({ ray, intersection, u, v }: { ray: Ray, intersection: Intersection, u: number, v: number }): { bounceRay: Ray, attenuation: Color } {
-    const attenuation = this.albedo;
+    const attenuation = this.albedo.getColor({ u, v, intersection });
 
     let bounceRay;
     const { direction, cosine, discriminant } = refractVector({ direction: ray.direction, normal: intersection.normal, refractiveIndex: this.refractiveIndex });

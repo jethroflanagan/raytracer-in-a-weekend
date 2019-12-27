@@ -94,14 +94,14 @@ export class Renderer {
         return new Color(0, 0, 0);
       }
 
-      if (volume.material) {
+      if (intersection.material) {
         const { u, v } = intersection;
-        let { attenuation, bounceRay, emission } = volume.material.bounce({ ray, intersection, u, v });
+        let { attenuation, bounceRay, emission } = intersection.material.bounce({ ray, intersection, u, v });
         if (!emission) {
           emission = new Color(0,0,0);
         }
         if (bounceRay && attenuation) {
-          color = this.getColorForRay({ ray: bounceRay, depth: depth + 1, maxRayDepth })//.toVector().multiply(attenuation.toVector()).toColor();
+          color = this.getColorForRay({ ray: bounceRay, depth: depth + 1, maxRayDepth })
           return color.toVector()
             .multiply(attenuation.toVector())
             .add(emission.toVector()).toColor();
