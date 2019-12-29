@@ -1,14 +1,23 @@
 {
-  "name": "typescript",
+  "name": "typescript-raytracer",
   "version": "0.0.0",
   "private": true,
-  "main": "index.html",
+  "main": "dist/index.js",
+  "author": {
+    "name": "Jethro Flanagan",
+    "email": "jethroflanagan@gmail.com"
+  },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "start": "parcel index.html --no-hmr",
     "start-reload": "parcel index.html --open",
     "start-nohmr": "parcel watch index.html --no-hmr",
     "start-server": "live-server --port=1234 ./dist/ --wait=4000",
-    "build": "parcel build index.html"
+    "build": "parcel build src/index.ts --out-file index.js",
+    "prepublish": "yarn build",
+    "publish-local": "yalc publish --private --files"
   },
   "devDependencies": {
     "parcel-bundler": "^1.6.1",
@@ -21,8 +30,10 @@
     "math3d": "^0.2.2",
     "noisejs": "^2.1.0",
     "parcel": "^1.12.4",
+    "pubsub-js": "^1.8.0",
     "seedrandom": "^3.0.1",
-    "src": "^1.1.2"
+    "src": "^1.1.2",
+    "yalc": "^1.0.0-pre.34"
   },
   "alias": {
     "src": "./src"

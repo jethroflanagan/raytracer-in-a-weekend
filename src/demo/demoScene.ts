@@ -23,7 +23,7 @@ const setupPlaceOnSurface = ({ surfaceCenter, surfaceRadius }) => ({ from, spher
   return placeSphereOnSurfaceFromPosition({ from, surfaceCenter, sphereRadius, surfaceRadius });
 }
 
-export async function create({ aspectRatio, width, height }) {
+export async function create({ aspectRatio }) {
   const scene = new Scene();
 
   const background = new FlatBackground();
