@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
+    "module": "es2015",
     "jsx": "preserve",
     "esModuleInterop": true,
     "sourceMap": true,
@@ -14,5 +14,8 @@
     ],
     "rootDir": "src",
     "moduleResolution": "node"
-  }
+  },
+  "include": [
+    "src/**/*"
+  ]
 }
