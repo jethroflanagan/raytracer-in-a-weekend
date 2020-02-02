@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Icon, List, Input, InputNumber, Row } from 'antd';
+import { Icon, List, Input, InputNumber, Row, Form } from 'antd';
 import Grid from 'antd/lib/card/Grid';
 
 const getInput = ({ type, onChange, value, options }) => {
@@ -25,9 +25,9 @@ const getInput = ({ type, onChange, value, options }) => {
 export const ItemProperty = (item) => {
   const { name } = item;
   return (
-    <div style={{ padding: '8px' }}>
-      {name} {getInput(item)}
-    </div>
+    <Form.Item label={name}>
+      {getInput(item)}
+    </Form.Item>
   );
 }
 

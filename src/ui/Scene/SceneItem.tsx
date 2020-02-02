@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Icon, List } from 'antd';
+import { Icon, List, Form } from 'antd';
 import { ItemProperty } from './ItemProperty';
 
 export const SceneItem = ({ item, type }) => {
@@ -11,9 +11,11 @@ export const SceneItem = ({ item, type }) => {
   ));
 
   return (
-    <List>
-      {properties}
-    </List>
+    <Form layout="horizontal" onSubmit={() => {}}>
+      <List>
+        {properties}
+      </List>
+    </Form>
   );
 }
 
